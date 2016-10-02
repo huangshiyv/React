@@ -1,69 +1,23 @@
 import React from 'react';
 import { render } from 'react-dom';
 import axios from 'axios';
+import Title from './Title';
+import TodoForm from './TodoForm';
+import TodoList from './TodoList';
+import firebase from 'firebase';
+import Reactfire from 'reactfire';
+import reactMixin from 'react-mixin'
 
-console.clear();
+const firebaseConfig = {
+    apiKey: "AIzaSyCh3lKSmu1i9F_VZ6pDh1a-k8AztpqvdQs",
+    authDomain: "firstapp-52d6b.firebaseapp.com",
+    databaseURL: "https://firstapp-52d6b.firebaseio.com",
+    storageBucket: "firstapp-52d6b.appspot.com",
+    messagingSenderId: "147703247224"
+  };
 
-const Title = ({todoCount}) => {
-  return (
-    <div>
-       <div>
-          <h1>to-do ({todoCount})</h1>
-       </div>
-    </div>
-  );
-}
+const firebaseApp = firebase.initializeApp(firebaseConfig);
 
-const TodoForm = ({addTodo}) => {
-  // Input Tracker
-  let input;
-  // Return JSX
-  return (
-   <form onSubmit={(e) => {
-        e.preventDefault();
-        addTodo(input.value);
-        input.value = '';
-      }}>
-      <div className="form-group">
-        <label htmlFor="date">Date</label>
-        <input type="date" className="form-control" id="date" placeholder="date" />
-      </div>
-      <div className="form-group">
-        <label htmlFor="detail">Detail</label>
-        <input type="text" className="form-control" id="detail" placeholder="Detail" ref={node => {
-        input = node;
-      }}/>
-
-      </div>
-      <div className="form-group">
-        <label htmlFor="amount">Detail</label>
-        <input type="number" className="form-control" id="amount" step="0.01" placeholder="amount" />
-      </div>
-      <div className="form-group">
-        <label htmlFor="description">Description</label>
-        <textarea className="form-control" id="description" placeholder="Detail"  rows="3"></textarea>
-      </div>
-      <button type="submit" className="btn btn-default">Submit</button>
-    </form>
-  );
-};
-
-const Todo = ({todo, remove}) => {
-  // Each Todo
-  return (<a href="#" className="list-group-item" onClick={() => {remove(todo.id)}}>{todo.text}</a>);
-}
-
-const TodoList = ({todos, remove}) => {
-  // Map through the todos
-  const todoNode = todos.map((todo) => {
-    return (<Todo todo={todo} key={todo.id} remove={remove}/>)
-  });
-  return (<div className="list-group" style={{marginTop:'30px'}}>{todoNode}</div>);
-}
-
-// Contaner Component
-// Todo Id
-window.id = 0;
 class TodoApp extends React.Component{
   constructor(props){
     // Pass props to parent class
@@ -72,29 +26,19 @@ class TodoApp extends React.Component{
     this.state = {
       data: []
     }
-    this.apiUrl = 'http://57efd831d647bc11008cf72d.mockapi.io/v1/app'
   }
 
   // Lifecycle method
-  componentDidMount(){
-    // Make HTTP reques with Axios
-    console.log('In componentDidMount');
-    axios.get(this.apiUrl)
-      .then((res) => {
-        // Set state with result
-        this.setState({data:res.data});
-      });
+  componentWillMount(){
+    const firebaseRef = firebase.database().ref('Pighouse/data');
+    this.bindAsArray(firebaseRef.limitToLast(25), 'data');
   }
+
   // Add todo handler
   addTodo(val){
-    // Assemble data
-    const todo = {text: val}
-    // Update data
-    axios.post(this.apiUrl, todo)
-       .then((res) => {
-          this.state.data.push(res.data);
-          this.setState({data: this.state.data});
-       });
+    this.firebaseRefs['data'].push({
+        text: val
+      });
   }
   // Handle remove
   handleRemove(id){
@@ -102,11 +46,9 @@ class TodoApp extends React.Component{
     const remainder = this.state.data.filter((todo) => {
       if(todo.id !== id) return todo;
     });
-    // Update state with filter
-    axios.delete(this.apiUrl+'/'+id)
-      .then((res) => {
-        this.setState({data: remainder});
-      })
+    var firebaseRef = firebase.database().ref('Pighouse/data');
+    firebaseRef.child(id).remove();
+    
   }
 
   render(){
@@ -123,4 +65,5 @@ class TodoApp extends React.Component{
     );
   }
 }
+reactMixin(TodoApp.prototype, Reactfire);
 render(<TodoApp />, document.getElementById('container'));
