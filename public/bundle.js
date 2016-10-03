@@ -134,8 +134,7 @@
 	  }, {
 	    key: 'addTodo',
 	    value: function addTodo(val) {
-	      var todo = { text: val };
-	      this.state.data.push(todo);
+	      this.state.data.push(val);
 	      this.setState({
 	        data: this.state.data
 	      });
@@ -22943,12 +22942,21 @@
 	  var date = _ref.date;
 
 	  // Input Tracker
-	  var input = void 0;
+	  var dateInput = void 0;
+	  var itemInput = void 0;
+	  var amountInput = void 0;
+	  var descriptionInput = void 0;
 	  // Return JSX
 	  var onSubmit = function onSubmit(e) {
 	    e.preventDefault();
-	    addTodo(input.value);
-	    input.value = '';
+	    var inputValue = {
+	      time: dateInput.value,
+	      item: itemInput.value,
+	      amount: amountInput.value,
+	      description: descriptionInput.value
+	    };
+	    addTodo(inputValue);
+	    itemInput.value = '';
 	  };
 
 	  return _react2.default.createElement(
@@ -22962,7 +22970,9 @@
 	        { htmlFor: 'date' },
 	        '\u65F6\u95F4'
 	      ),
-	      _react2.default.createElement('input', { type: 'date', className: 'form-control', id: 'date', defaultValue: date, placeholder: 'date' })
+	      _react2.default.createElement('input', { type: 'date', className: 'form-control', id: 'date', defaultValue: date, placeholder: 'date', ref: function ref(node) {
+	          dateInput = node;
+	        } })
 	    ),
 	    _react2.default.createElement(
 	      'div',
@@ -22973,7 +22983,7 @@
 	        '\u82B1\u9500\u9879\u76EE'
 	      ),
 	      _react2.default.createElement('input', { type: 'text', className: 'form-control', id: 'detail', placeholder: 'Detail', ref: function ref(node) {
-	          input = node;
+	          itemInput = node;
 	        } })
 	    ),
 	    _react2.default.createElement(
@@ -22984,7 +22994,9 @@
 	        { htmlFor: 'amount' },
 	        '\u91D1\u989D'
 	      ),
-	      _react2.default.createElement('input', { type: 'number', className: 'form-control', id: 'amount', step: '0.01', placeholder: 'amount' })
+	      _react2.default.createElement('input', { type: 'number', className: 'form-control', id: 'amount', step: '0.01', placeholder: 'amount', ref: function ref(node) {
+	          amountInput = node;
+	        } })
 	    ),
 	    _react2.default.createElement(
 	      'div',
@@ -22994,7 +23006,9 @@
 	        { htmlFor: 'description' },
 	        '\u63CF\u8FF0\u4FE1\u606F'
 	      ),
-	      _react2.default.createElement('textarea', { className: 'form-control', id: 'description', placeholder: 'Detail', rows: '3' })
+	      _react2.default.createElement('textarea', { className: 'form-control', id: 'description', placeholder: 'Detail', rows: '3', ref: function ref(node) {
+	          descriptionInput = node;
+	        } })
 	    ),
 	    _react2.default.createElement(
 	      'button',
@@ -23025,15 +23039,35 @@
 	var Todo = function Todo(_ref) {
 	  var todo = _ref.todo;
 	  var remove = _ref.remove;
+	  var index = _ref.index;
 
 	  // Each Todo
 	  return _react2.default.createElement(
-	    "a",
-	    { href: "#", className: "list-group-item", onClick: function onClick() {
-	        remove(todo.id);
-	      } },
-	    todo.text
+	    "tr",
+	    null,
+	    _react2.default.createElement(
+	      "th",
+	      { scope: "row" },
+	      index + 1
+	    ),
+	    _react2.default.createElement(
+	      "td",
+	      null,
+	      todo.time
+	    ),
+	    _react2.default.createElement(
+	      "td",
+	      null,
+	      todo.item
+	    ),
+	    _react2.default.createElement(
+	      "td",
+	      null,
+	      todo.amount
+	    ),
+	    _react2.default.createElement("td", null)
 	  );
+	  //return (<a href="#" className="list-group-item" onClick={() => {remove(todo.id)}}>{todo.text}</a>);
 	};
 
 	var TodoList = function TodoList(_ref2) {
@@ -23042,12 +23076,49 @@
 
 	  // Map through the todos
 	  var todoNode = todos.map(function (todo, index) {
-	    return _react2.default.createElement(Todo, { todo: todo, key: index, remove: remove });
+	    return _react2.default.createElement(Todo, { todo: todo, key: index, index: index, emove: remove });
 	  });
 	  return _react2.default.createElement(
 	    "div",
 	    { className: "list-group", style: { marginTop: '30px' } },
-	    todoNode
+	    _react2.default.createElement(
+	      "table",
+	      { className: "table" },
+	      _react2.default.createElement(
+	        "thead",
+	        { className: "thead-inverse" },
+	        _react2.default.createElement(
+	          "tr",
+	          null,
+	          _react2.default.createElement(
+	            "th",
+	            null,
+	            "#"
+	          ),
+	          _react2.default.createElement(
+	            "th",
+	            null,
+	            "Time"
+	          ),
+	          _react2.default.createElement(
+	            "th",
+	            null,
+	            "Item"
+	          ),
+	          _react2.default.createElement(
+	            "th",
+	            null,
+	            "Amount"
+	          ),
+	          _react2.default.createElement("th", null)
+	        )
+	      ),
+	      _react2.default.createElement(
+	        "tbody",
+	        null,
+	        todoNode
+	      )
+	    )
 	  );
 	};
 

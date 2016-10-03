@@ -46,8 +46,7 @@ class TodoApp extends React.Component{
 
   // Add todo handler
   addTodo(val){
-    const todo = {text: val};
-    this.state.data.push(todo);
+    this.state.data.push(val);
     this.setState({
      data: this.state.data
    });
