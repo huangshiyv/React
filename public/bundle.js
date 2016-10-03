@@ -23041,8 +23041,8 @@
 	  var remove = _ref2.remove;
 
 	  // Map through the todos
-	  var todoNode = todos.map(function (todo) {
-	    return _react2.default.createElement(Todo, { todo: todo, key: todo.id, remove: remove });
+	  var todoNode = todos.map(function (todo, index) {
+	    return _react2.default.createElement(Todo, { todo: todo, key: index, remove: remove });
 	  });
 	  return _react2.default.createElement(
 	    "div",

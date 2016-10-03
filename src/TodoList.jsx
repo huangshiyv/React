@@ -7,8 +7,8 @@ const Todo = ({todo, remove}) => {
 
 const TodoList = ({todos, remove}) => {
   // Map through the todos
-  const todoNode = todos.map((todo) => {
-    return (<Todo todo={todo} key={todo.id} remove={remove}/>)
+  const todoNode = todos.map((todo,index) => {
+    return (<Todo todo={todo} key={index} remove={remove}/>)
   });
   return (<div className="list-group" style={{marginTop:'30px'}}>{todoNode}</div>);
 }
