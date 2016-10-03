@@ -4,19 +4,22 @@ import axios from 'axios';
 import Title from './Title';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
-import firebase from 'firebase';
-import Reactfire from 'reactfire';
-import reactMixin from 'react-mixin'
+import Rebase from 're-base';
 
-const firebaseConfig = {
+var base = Rebase.createClass({
     apiKey: "AIzaSyCh3lKSmu1i9F_VZ6pDh1a-k8AztpqvdQs",
     authDomain: "firstapp-52d6b.firebaseapp.com",
     databaseURL: "https://firstapp-52d6b.firebaseio.com",
     storageBucket: "firstapp-52d6b.appspot.com",
     messagingSenderId: "147703247224"
-  };
+});
 
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+});
+
 
 class TodoApp extends React.Component{
   constructor(props){
@@ -27,28 +30,35 @@ class TodoApp extends React.Component{
       data: []
     }
   }
+  componentDidMount(){
+      this.ref = base.syncState('Pighouse/data', {
+      context: this,
+      state: 'data',
+      asArray: true,
+      then(){
+      }
+    });
+  }
 
-  // Lifecycle method
-  componentWillMount(){
-    const firebaseRef = firebase.database().ref('Pighouse/data');
-    this.bindAsArray(firebaseRef.limitToLast(25), 'data');
+  componentWillUnmount(){
+    base.removeBinding(this.ref);
   }
 
   // Add todo handler
   addTodo(val){
-    this.firebaseRefs['data'].push({
-        text: val
-      });
+    const todo = {text: val};
+    this.state.data.push(todo);
+    this.setState({
+     data: this.state.data
+   });
   }
   // Handle remove
   handleRemove(id){
-    // Filter all todos except the one to be removed
-    const remainder = this.state.data.filter((todo) => {
-      if(todo.id !== id) return todo;
-    });
-    var firebaseRef = firebase.database().ref('Pighouse/data');
-    firebaseRef.child(id).remove();
-    
+    let newData = this.state.data;
+    newData.splice(id,1);
+    this.setState({
+        data: newData
+      })
   }
 
   render(){
@@ -56,7 +66,7 @@ class TodoApp extends React.Component{
     return (
       <div>
         <Title todoCount={this.state.data.length}/>
-        <TodoForm addTodo={this.addTodo.bind(this)}/>
+        <TodoForm addTodo={this.addTodo.bind(this)} date={new Date().toDateInputValue()} />
         <TodoList
           todos={this.state.data}
           remove={this.handleRemove.bind(this)}
@@ -65,5 +75,5 @@ class TodoApp extends React.Component{
     );
   }
 }
-reactMixin(TodoApp.prototype, Reactfire);
+
 render(<TodoApp />, document.getElementById('container'));

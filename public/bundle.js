@@ -70,17 +70,9 @@
 
 	var _TodoList2 = _interopRequireDefault(_TodoList);
 
-	var _firebase = __webpack_require__(197);
+	var _reBase = __webpack_require__(197);
 
-	var _firebase2 = _interopRequireDefault(_firebase);
-
-	var _reactfire = __webpack_require__(202);
-
-	var _reactfire2 = _interopRequireDefault(_reactfire);
-
-	var _reactMixin = __webpack_require__(203);
-
-	var _reactMixin2 = _interopRequireDefault(_reactMixin);
+	var _reBase2 = _interopRequireDefault(_reBase);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -90,15 +82,19 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var firebaseConfig = {
+	var base = _reBase2.default.createClass({
 	  apiKey: "AIzaSyCh3lKSmu1i9F_VZ6pDh1a-k8AztpqvdQs",
 	  authDomain: "firstapp-52d6b.firebaseapp.com",
 	  databaseURL: "https://firstapp-52d6b.firebaseio.com",
 	  storageBucket: "firstapp-52d6b.appspot.com",
 	  messagingSenderId: "147703247224"
-	};
+	});
 
-	var firebaseApp = _firebase2.default.initializeApp(firebaseConfig);
+	Date.prototype.toDateInputValue = function () {
+	  var local = new Date(this);
+	  local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+	  return local.toJSON().slice(0, 10);
+	};
 
 	var TodoApp = function (_React$Component) {
 	  _inherits(TodoApp, _React$Component);
@@ -117,14 +113,20 @@
 	    return _this;
 	  }
 
-	  // Lifecycle method
-
-
 	  _createClass(TodoApp, [{
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      var firebaseRef = _firebase2.default.database().ref('Pighouse/data');
-	      this.bindAsArray(firebaseRef.limitToLast(25), 'data');
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.ref = base.syncState('Pighouse/data', {
+	        context: this,
+	        state: 'data',
+	        asArray: true,
+	        then: function then() {}
+	      });
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      base.removeBinding(this.ref);
 	    }
 
 	    // Add todo handler
@@ -132,8 +134,10 @@
 	  }, {
 	    key: 'addTodo',
 	    value: function addTodo(val) {
-	      this.firebaseRefs['data'].push({
-	        text: val
+	      var todo = { text: val };
+	      this.state.data.push(todo);
+	      this.setState({
+	        data: this.state.data
 	      });
 	    }
 	    // Handle remove
@@ -141,12 +145,11 @@
 	  }, {
 	    key: 'handleRemove',
 	    value: function handleRemove(id) {
-	      // Filter all todos except the one to be removed
-	      var remainder = this.state.data.filter(function (todo) {
-	        if (todo.id !== id) return todo;
+	      var newData = this.state.data;
+	      newData.splice(id, 1);
+	      this.setState({
+	        data: newData
 	      });
-	      var firebaseRef = _firebase2.default.database().ref('Pighouse/data');
-	      firebaseRef.child(id).remove();
 	    }
 	  }, {
 	    key: 'render',
@@ -156,7 +159,7 @@
 	        'div',
 	        null,
 	        _react2.default.createElement(_Title2.default, { todoCount: this.state.data.length }),
-	        _react2.default.createElement(_TodoForm2.default, { addTodo: this.addTodo.bind(this) }),
+	        _react2.default.createElement(_TodoForm2.default, { addTodo: this.addTodo.bind(this), date: new Date().toDateInputValue() }),
 	        _react2.default.createElement(_TodoList2.default, {
 	          todos: this.state.data,
 	          remove: this.handleRemove.bind(this)
@@ -168,7 +171,6 @@
 	  return TodoApp;
 	}(_react2.default.Component);
 
-	(0, _reactMixin2.default)(TodoApp.prototype, _reactfire2.default);
 	(0, _reactDom.render)(_react2.default.createElement(TodoApp, null), document.getElementById('container'));
 
 /***/ },
@@ -22938,26 +22940,29 @@
 
 	var TodoForm = function TodoForm(_ref) {
 	  var addTodo = _ref.addTodo;
+	  var date = _ref.date;
 
 	  // Input Tracker
 	  var input = void 0;
 	  // Return JSX
+	  var onSubmit = function onSubmit(e) {
+	    e.preventDefault();
+	    addTodo(input.value);
+	    input.value = '';
+	  };
+
 	  return _react2.default.createElement(
 	    'form',
-	    { onSubmit: function onSubmit(e) {
-	        e.preventDefault();
-	        addTodo(input.value);
-	        input.value = '';
-	      } },
+	    { onSubmit: onSubmit },
 	    _react2.default.createElement(
 	      'div',
 	      { className: 'form-group' },
 	      _react2.default.createElement(
 	        'label',
 	        { htmlFor: 'date' },
-	        'Date'
+	        '\u65F6\u95F4'
 	      ),
-	      _react2.default.createElement('input', { type: 'date', className: 'form-control', id: 'date', placeholder: 'date' })
+	      _react2.default.createElement('input', { type: 'date', className: 'form-control', id: 'date', defaultValue: date, placeholder: 'date' })
 	    ),
 	    _react2.default.createElement(
 	      'div',
@@ -22965,7 +22970,7 @@
 	      _react2.default.createElement(
 	        'label',
 	        { htmlFor: 'detail' },
-	        'Detail'
+	        '\u82B1\u9500\u9879\u76EE'
 	      ),
 	      _react2.default.createElement('input', { type: 'text', className: 'form-control', id: 'detail', placeholder: 'Detail', ref: function ref(node) {
 	          input = node;
@@ -22977,7 +22982,7 @@
 	      _react2.default.createElement(
 	        'label',
 	        { htmlFor: 'amount' },
-	        'Amount'
+	        '\u91D1\u989D'
 	      ),
 	      _react2.default.createElement('input', { type: 'number', className: 'form-control', id: 'amount', step: '0.01', placeholder: 'amount' })
 	    ),
@@ -22987,7 +22992,7 @@
 	      _react2.default.createElement(
 	        'label',
 	        { htmlFor: 'description' },
-	        'Description'
+	        '\u63CF\u8FF0\u4FE1\u606F'
 	      ),
 	      _react2.default.createElement('textarea', { className: 'form-control', id: 'description', placeholder: 'Detail', rows: '3' })
 	    ),
@@ -23052,6 +23057,1152 @@
 /* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(198);
+
+
+
+/***/ },
+/* 198 */
+/***/ function(module, exports, __webpack_require__) {
+
+	(function webpackUniversalModuleDefinition(root, factory) {
+		if(true)
+			module.exports = factory(__webpack_require__(199));
+		else if(typeof define === 'function' && define.amd)
+			define(["firebase"], factory);
+		else {
+			var a = typeof exports === 'object' ? factory(require("firebase")) : factory(root["Firebase"]);
+			for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+		}
+	})(this, function(__WEBPACK_EXTERNAL_MODULE_2__) {
+	return /******/ (function(modules) { // webpackBootstrap
+	/******/ 	// The module cache
+	/******/ 	var installedModules = {};
+
+	/******/ 	// The require function
+	/******/ 	function __webpack_require__(moduleId) {
+
+	/******/ 		// Check if module is in cache
+	/******/ 		if(installedModules[moduleId])
+	/******/ 			return installedModules[moduleId].exports;
+
+	/******/ 		// Create a new module (and put it into the cache)
+	/******/ 		var module = installedModules[moduleId] = {
+	/******/ 			exports: {},
+	/******/ 			id: moduleId,
+	/******/ 			loaded: false
+	/******/ 		};
+
+	/******/ 		// Execute the module function
+	/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+
+	/******/ 		// Flag the module as loaded
+	/******/ 		module.loaded = true;
+
+	/******/ 		// Return the exports of the module
+	/******/ 		return module.exports;
+	/******/ 	}
+
+
+	/******/ 	// expose the modules object (__webpack_modules__)
+	/******/ 	__webpack_require__.m = modules;
+
+	/******/ 	// expose the module cache
+	/******/ 	__webpack_require__.c = installedModules;
+
+	/******/ 	// __webpack_public_path__
+	/******/ 	__webpack_require__.p = "";
+
+	/******/ 	// Load entry module and return exports
+	/******/ 	return __webpack_require__(0);
+	/******/ })
+	/************************************************************************/
+	/******/ ([
+	/* 0 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		module.exports = __webpack_require__(1);
+
+
+	/***/ },
+	/* 1 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+		function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+		function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+		module.exports = (function () {
+		  var firebase = __webpack_require__(2);
+		  var Symbol = __webpack_require__(3);
+		  var firebaseApp = null;
+		  var rebase;
+		  var firebaseRefs = new Map();
+		  var firebaseListeners = new Map();
+		  var syncs = new WeakMap();
+
+		  var optionValidators = {
+		    notObject: function notObject(options) {
+		      if (!_isObject(options)) {
+		        _throwError('The options argument must be an object. Instead, got ' + options, 'INVALID_OPTIONS');
+		      }
+		    },
+		    context: function context(options) {
+		      this.notObject(options);
+		      if (!options.context || !_isObject(options.context)) {
+		        this.makeError('context', 'object', options.context);
+		      }
+		    },
+		    state: function state(options) {
+		      this.notObject(options);
+		      if (!options.state || typeof options.state !== 'string') {
+		        this.makeError('state', 'string', options.state);
+		      }
+		    },
+		    then: function then(options) {
+		      this.notObject(options);
+		      if (typeof options.then === 'undefined' || typeof options.then !== 'function') {
+		        this.makeError('then', 'function', options.then);
+		      }
+		    },
+		    data: function data(options) {
+		      this.notObject(options);
+		      if (typeof options.data === 'undefined') {
+		        this.makeError('data', 'ANY', options.data);
+		      }
+		    },
+		    query: function query(options) {
+		      this.notObject(options);
+		      var validQueries = ['limitToFirst', 'limitToLast', 'orderByChild', 'orderByValue', 'orderByKey', 'orderByPriority', 'startAt', 'endAt', 'equalTo'];
+		      var queries = options.queries;
+		      for (var key in queries) {
+		        if (queries.hasOwnProperty(key) && validQueries.indexOf(key) === -1) {
+		          _throwError('The query field must contain valid Firebase queries.  Expected one of [' + validQueries.join(', ') + ']. Instead, got ' + key, 'INVALID_OPTIONS');
+		        }
+		      }
+		    },
+		    makeError: function makeError(prop, type, actual) {
+		      _throwError('The options argument must contain a ' + prop + ' property of type ' + type + '. Instead, got ' + actual, 'INVALID_OPTIONS');
+		    }
+		  };
+
+		  function _toArray(snapshot) {
+		    var arr = [];
+		    snapshot.forEach(function (childSnapshot) {
+		      var val = childSnapshot.val();
+		      if (_isObject(val)) {
+		        val.key = childSnapshot.key;
+		      }
+		      arr.push(val);
+		    });
+		    return arr;
+		  };
+
+		  function _isObject(obj) {
+		    return Object.prototype.toString.call(obj) === '[object Object]' ? true : false;
+		  };
+
+		  function _throwError(msg, code) {
+		    var err = new Error('REBASE: ' + msg);
+		    err.code = code;
+		    throw err;
+		  };
+
+		  function _validateConfig(config) {
+		    var defaultError = 'Rebase.createClass failed.';
+		    var errorMsg;
+		    if (typeof config !== 'object') {
+		      errorMsg = defaultError + ' to migrate from 2.x.x to 3.x.x, the config must be an object. See: https://firebase.google.com/docs/web/setup#add_firebase_to_your_app';
+		    } else if (!config || arguments.length > 1) {
+		      errorMsg = defaultError + ' expects 1 argument.';
+		    }
+
+		    if (typeof errorMsg !== 'undefined') {
+		      _throwError(errorMsg, "INVALID_CONFIG");
+		    }
+		  };
+
+		  function _validateEndpoint(endpoint) {
+		    var defaultError = 'The Firebase endpoint you are trying to listen to';
+		    var errorMsg;
+		    if (typeof endpoint !== 'string') {
+		      errorMsg = defaultError + ' must be a string. Instead, got ' + endpoint;
+		    } else if (endpoint.length === 0) {
+		      errorMsg = defaultError + ' must be a non-empty string. Instead, got ' + endpoint;
+		    } else if (endpoint.length > 768) {
+		      errorMsg = defaultError + ' is too long to be stored in Firebase. It must be less than 768 characters.';
+		    } else if (/^$|[\[\]\#\$]|.{1}[\.]/.test(endpoint)) {
+		      errorMsg = defaultError + ' in invalid. Paths must be non-empty strings and can\'t contain ".", "#", "$", "[", or "]".';
+		    }
+
+		    if (typeof errorMsg !== 'undefined') {
+		      _throwError(errorMsg, "INVALID_ENDPOINT");
+		    }
+		  };
+
+		  function _setState(newState) {
+		    this.setState(newState);
+		  };
+
+		  function _returnRef(endpoint, method, id, context) {
+		    return { endpoint: endpoint, method: method, id: id, context: context };
+		  };
+
+		  function _addSync(context, id, sync) {
+		    var existingSyncs = syncs.get(context) || [];
+		    existingSyncs.push(sync);
+		    syncs.set(context, existingSyncs);
+		  }
+		  function _fetch(endpoint, options) {
+		    _validateEndpoint(endpoint);
+		    optionValidators.context(options);
+		    options.queries && optionValidators.query(options);
+		    var ref = firebase.database().ref(endpoint);
+		    ref = _addQueries(ref, options.queries);
+		    return ref.once('value').then(function (snapshot) {
+		      var data = options.asArray === true ? _toArray(snapshot) : snapshot.val();
+		      if (options.then) {
+		        options.then.call(options.context, data);
+		      }
+		      return data;
+		    }, function (err) {
+		      //call onFailure callback if it exists otherwise return a rejected promise
+		      if (options.onFailure && typeof options.onFailure === 'function') {
+		        options.onFailure.call(options.context, err);
+		      } else {
+		        return firebase.Promise.reject(err);
+		      }
+		    });
+		  };
+
+		  function _firebaseRefsMixin(id, ref) {
+		    firebaseRefs.set(id, ref);
+		  };
+
+		  function _addListener(id, invoker, options, ref) {
+		    ref = _addQueries(ref, options.queries);
+		    firebaseListeners.set(id, ref.on('value', function (snapshot) {
+		      var data = snapshot.val();
+		      data = data === null ? options.asArray === true ? [] : {} : data;
+		      if (invoker === 'listenTo') {
+		        options.asArray === true ? options.then.call(options.context, _toArray(snapshot)) : options.then.call(options.context, data);
+		      } else if (invoker === 'syncState') {
+		        data = options.asArray === true ? _toArray(snapshot) : data;
+		        options.reactSetState.call(options.context, _defineProperty({}, options.state, data));
+		        if (options.then && options.then.called === false) {
+		          options.then.call(options.context);
+		          options.then.called = true;
+		        }
+		      } else if (invoker === 'bindToState') {
+		        var newState = {};
+		        options.asArray === true ? newState[options.state] = _toArray(snapshot) : newState[options.state] = data;
+		        _setState.call(options.context, newState);
+		        if (options.then && options.then.called === false) {
+		          options.then.call(options.context);
+		          options.then.called = true;
+		        }
+		      }
+		    }));
+		  };
+
+		  function _bind(endpoint, options, invoker) {
+		    _validateEndpoint(endpoint);
+		    optionValidators.context(options);
+		    invoker === 'listenTo' && optionValidators.then(options);
+		    invoker === 'bindToState' && optionValidators.state(options);
+		    options.queries && optionValidators.query(options);
+		    options.then && (options.then.called = false);
+
+		    var id = _createHash(endpoint, invoker);
+		    var ref = firebase.database().ref(endpoint);
+		    _firebaseRefsMixin(id, ref);
+		    _addListener(id, invoker, options, ref);
+		    return _returnRef(endpoint, invoker, id, options.context);
+		  };
+
+		  function _updateSyncState(ref, data) {
+		    if (_isObject(data)) {
+		      for (var prop in data) {
+		        //allow timestamps to be set
+		        if (prop !== '.sv') {
+		          _updateSyncState(ref.child(prop), data[prop]);
+		        } else {
+		          ref.set(data);
+		        }
+		      }
+		    } else {
+		      ref.set(data);
+		    }
+		  };
+
+		  function _sync(endpoint, options) {
+		    _validateEndpoint(endpoint);
+		    optionValidators.context(options);
+		    optionValidators.state(options);
+		    options.queries && optionValidators.query(options);
+		    options.then && (options.then.called = false);
+
+		    //store reference to react's setState
+		    if (_sync.called !== true) {
+		      _sync.reactSetState = options.context.setState;
+		      _sync.called = true;
+		    }
+		    options.reactSetState = _sync.reactSetState;
+
+		    var ref = firebase.database().ref(endpoint);
+		    var id = _createHash(endpoint, 'syncState');
+		    _firebaseRefsMixin(id, ref);
+		    _addListener(id, 'syncState', options, ref);
+
+		    var sync = {
+		      id: id,
+		      updateFirebase: _updateSyncState.bind(this, ref),
+		      stateKey: options.state
+		    };
+		    _addSync(options.context, id, sync);
+
+		    options.context.setState = function (data, cb) {
+		      var _this = this;
+
+		      var syncsToCall = syncs.get(this);
+		      syncsToCall.forEach(function (sync) {
+		        for (var key in data) {
+		          if (data.hasOwnProperty(key)) {
+		            if (key === sync.stateKey) {
+		              sync.updateFirebase(data[key]);
+		            } else {
+		              _sync.reactSetState.call(_this, data, cb);
+		            }
+		          }
+		        }
+		      });
+		    };
+		    return _returnRef(endpoint, 'syncState', id, options.context);
+		  };
+
+		  function _post(endpoint, options) {
+		    _validateEndpoint(endpoint);
+		    optionValidators.data(options);
+		    var ref = firebase.database().ref(endpoint);
+		    if (options.then) {
+		      return ref.set(options.data, options.then);
+		    } else {
+		      return ref.set(options.data);
+		    }
+		  };
+
+		  function _update(endpoint, options) {
+		    _validateEndpoint(endpoint);
+		    optionValidators.data(options);
+		    var ref = firebase.database().ref(endpoint);
+		    if (options.then) {
+		      return ref.update(options.data, options.then);
+		    } else {
+		      return ref.update(options.data);
+		    }
+		  };
+
+		  function _push(endpoint, options) {
+		    _validateEndpoint(endpoint);
+		    optionValidators.data(options);
+		    var ref = firebase.database().ref(endpoint);
+		    var returnEndpoint;
+		    if (options.then) {
+		      returnEndpoint = ref.push(options.data, options.then);
+		    } else {
+		      returnEndpoint = ref.push(options.data);
+		    }
+		    return returnEndpoint;
+		  };
+
+		  function _addQueries(ref, queries) {
+		    var needArgs = {
+		      limitToFirst: true,
+		      limitToLast: true,
+		      orderByChild: true,
+		      startAt: true,
+		      endAt: true,
+		      equalTo: true
+		    };
+		    for (var key in queries) {
+		      if (queries.hasOwnProperty(key)) {
+		        if (needArgs[key]) {
+		          ref = ref[key](queries[key]);
+		        } else {
+		          ref = ref[key]();
+		        }
+		      }
+		    }
+		    return ref;
+		  };
+
+		  function _removeBinding(_ref) {
+		    var endpoint = _ref.endpoint;
+		    var method = _ref.method;
+		    var id = _ref.id;
+		    var context = _ref.context;
+
+		    var ref = firebaseRefs.get(id);
+		    var listener = firebaseListeners.get(id);
+		    if (typeof ref === "undefined") {
+		      var errorMsg = 'Unexpected value. Ref was either never bound or has already been unbound.';
+		      _throwError(errorMsg, "UNBOUND_ENDPOINT_VARIABLE");
+		    }
+		    ref.off('value', listener);
+		    firebaseRefs['delete'](id);
+		    firebaseListeners['delete'](id);
+		    var currentSyncs = syncs.get(context);
+		    if (currentSyncs && currentSyncs.length > 0) {
+		      var idx = currentSyncs.findIndex(function (item, index) {
+		        return item.id === id;
+		      });
+		      if (idx !== -1) {
+		        currentSyncs.splice(idx, 1);
+		        syncs.set(context, currentSyncs);
+		      }
+		    }
+		  };
+
+		  function _reset() {
+		    rebase = undefined;
+		    var _iteratorNormalCompletion = true;
+		    var _didIteratorError = false;
+		    var _iteratorError = undefined;
+
+		    try {
+		      for (var _iterator = firebaseRefs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+		        var _step$value = _slicedToArray(_step.value, 2);
+
+		        var id = _step$value[0];
+		        var ref = _step$value[1];
+
+		        ref.off('value', firebaseListeners.get(id));
+		        firebaseRefs = new Map();
+		        firebaseListeners = new Map();
+		        syncs = new WeakMap();
+		      }
+		    } catch (err) {
+		      _didIteratorError = true;
+		      _iteratorError = err;
+		    } finally {
+		      try {
+		        if (!_iteratorNormalCompletion && _iterator['return']) {
+		          _iterator['return']();
+		        }
+		      } finally {
+		        if (_didIteratorError) {
+		          throw _iteratorError;
+		        }
+		      }
+		    }
+		  };
+
+		  function _authWithPassword(credentials, fn) {
+		    var ref = firebase.auth();
+		    var email = credentials.email;
+		    var password = credentials.password;
+
+		    return ref.signInWithEmailAndPassword(email, password).then(function (authData) {
+		      return fn(null, authData);
+		    })['catch'](function (err) {
+		      return fn(err);
+		    });
+		  }
+
+		  function _authWithCustomToken(token, fn) {
+		    var ref = firebase.auth();
+		    return ref.signInWithCustomToken(token).then(function (user) {
+		      return fn(null, user);
+		    })['catch'](function (error) {
+		      return fn(error);
+		    });
+		  }
+
+		  function _authWithOAuthPopup(provider, fn, settings) {
+		    settings = settings || {};
+		    var authProvider = _getAuthProvider(provider, settings);
+		    var ref = firebase.auth();
+		    return ref.signInWithPopup(authProvider).then(function (authData) {
+		      return fn(null, authData);
+		    })['catch'](function (error) {
+		      return fn(error);
+		    });
+		  }
+
+		  function _getOAuthRedirectResult(fn) {
+		    var ref = firebase.auth();
+		    return ref.getRedirectResult().then(function (user) {
+		      return fn(null, user);
+		    })['catch'](function (error) {
+		      return fn(error);
+		    });
+		  }
+
+		  function _authWithOAuthToken(provider, token, fn, settings) {
+		    settings = settings || {};
+		    var authProvider = _getAuthProvider(provider, settings);
+		    var credential = authProvider.credential.apply(authProvider, [token].concat(_toConsumableArray(settings.providerOptions)));
+		    var ref = firebase.auth();
+		    return ref.signInWithCredential(credential).then(function (authData) {
+		      return fn(null, authData);
+		    })['catch'](function (error) {
+		      return fn(error);
+		    });
+		  }
+
+		  function _authWithOAuthRedirect(provider, fn, settings) {
+		    settings = settings || {};
+		    var authProvider = _getAuthProvider(provider, settings);
+		    var ref = firebase.auth();
+		    return ref.signInWithRedirect(authProvider).then(function () {
+		      return fn(null);
+		    })['catch'](function (error) {
+		      return fn(error);
+		    });
+		  }
+
+		  function _onAuth(fn) {
+		    var ref = firebase.auth();
+		    return ref.onAuthStateChanged(fn);
+		  }
+
+		  function _unauth() {
+		    var ref = firebase.auth();
+		    return ref.signOut();
+		  }
+
+		  function _getAuth() {
+		    var ref = firebase.auth();
+		    return ref.currentUser;
+		  }
+
+		  function _createUser(credentials, fn) {
+		    var ref = firebase.auth();
+		    var email = credentials.email;
+		    var password = credentials.password;
+
+		    return ref.createUserWithEmailAndPassword(email, password).then(function (authData) {
+		      return fn(null, authData);
+		    })['catch'](function (err) {
+		      return fn(err);
+		    });
+		  };
+
+		  function _resetPassword(credentials, fn) {
+		    var ref = firebase.auth();
+		    var email = credentials.email;
+
+		    return ref.sendPasswordResetEmail(email).then(function () {
+		      return fn(null);
+		    })['catch'](function (error) {
+		      return fn(error);
+		    });
+		  };
+
+		  function _getFacebookProvider(settings) {
+		    var provider = new firebase.auth.FacebookAuthProvider();
+		    if (settings.scope) {
+		      provider = _addScope(settings.scope, provider);
+		    }
+		    return provider;
+		  }
+
+		  function _getTwitterProvider() {
+		    return new firebase.auth.TwitterAuthProvider();
+		  }
+
+		  function _getGithubProvider(settings) {
+		    var provider = new firebase.auth.GithubAuthProvider();
+		    if (settings.scope) {
+		      provider = _addScope(settings.scope, provider);
+		    }
+		    return provider;
+		  };
+
+		  function _getGoogleProvider(settings) {
+		    var provider = new firebase.auth.GoogleAuthProvider();
+		    if (settings.scope) {
+		      provider = _addScope(settings.scope, provider);
+		    }
+		    return provider;
+		  };
+
+		  function _addScope(scope, provider) {
+		    if (Array.isArray(scope)) {
+		      scope.forEach(function (item) {
+		        provider.addScope(item);
+		      });
+		    } else {
+		      provider.addScope(scope);
+		    }
+		    return provider;
+		  }
+
+		  function _createHash(endpoint, invoker) {
+		    var hash = 0;
+		    var str = endpoint + invoker + Date.now();
+		    if (str.length == 0) return hash;
+		    for (var i = 0; i < str.length; i++) {
+		      var char = str.charCodeAt(i);
+		      hash = (hash << 5) - hash + char;
+		      hash = hash & hash;
+		    }
+		    return hash;
+		  }
+
+		  function _getAuthProvider(service, settings) {
+		    switch (service) {
+		      case 'twitter':
+		        return _getTwitterProvider();
+		        break;
+		      case 'google':
+		        return _getGoogleProvider(settings);
+		        break;
+		      case 'facebook':
+		        return _getFacebookProvider(settings);
+		        break;
+		      case 'github':
+		        return _getGithubProvider(settings);
+		        break;
+		      default:
+		        _throwError('Expected auth provider requested. Available auth providers: facebook,twitter,github, google', 'UNKNOWN AUTH PROVIDER');
+		        break;
+		    }
+		  }
+
+		  function init() {
+		    return {
+		      storage: firebase.storage,
+		      database: firebase.database,
+		      auth: firebase.auth,
+		      app: firebase.app,
+		      listenTo: function listenTo(endpoint, options) {
+		        return _bind(endpoint, options, 'listenTo');
+		      },
+		      bindToState: function bindToState(endpoint, options) {
+		        return _bind(endpoint, options, 'bindToState');
+		      },
+		      syncState: function syncState(endpoint, options) {
+		        return _sync(endpoint, options);
+		      },
+		      fetch: function fetch(endpoint, options) {
+		        return _fetch(endpoint, options);
+		      },
+		      post: function post(endpoint, options) {
+		        return _post(endpoint, options);
+		      },
+		      update: function update(endpoint, options) {
+		        return _update(endpoint, options);
+		      },
+		      push: function push(endpoint, options) {
+		        return _push(endpoint, options);
+		      },
+		      removeBinding: function removeBinding(endpoint) {
+		        _removeBinding(endpoint, true);
+		      },
+		      reset: function reset() {
+		        _reset();
+		      },
+		      authWithPassword: function authWithPassword(credentials, fn) {
+		        return _authWithPassword(credentials, fn);
+		      },
+		      authWithCustomToken: function authWithCustomToken(token, fn) {
+		        return _authWithCustomToken(token, fn);
+		      },
+		      authWithOAuthPopup: function authWithOAuthPopup(provider, fn, settings) {
+		        return _authWithOAuthPopup(provider, fn, settings);
+		      },
+		      authWithOAuthRedirect: function authWithOAuthRedirect(provider, fn, settings) {
+		        return _authWithOAuthRedirect(provider, fn, settings);
+		      },
+		      authWithOAuthToken: function authWithOAuthToken(provider, token, fn, settings) {
+		        return _authWithOAuthToken(provider, token, fn, settings);
+		      },
+		      authGetOAuthRedirectResult: function authGetOAuthRedirectResult(fn) {
+		        return _getOAuthRedirectResult(fn);
+		      },
+		      onAuth: function onAuth(fn) {
+		        return _onAuth(fn);
+		      },
+		      unauth: function unauth(fn) {
+		        return _unauth();
+		      },
+		      getAuth: function getAuth() {
+		        return _getAuth();
+		      },
+		      createUser: function createUser(credentials, fn) {
+		        return _createUser(credentials, fn);
+		      },
+		      resetPassword: function resetPassword(credentials, fn) {
+		        return _resetPassword(credentials, fn);
+		      }
+		    };
+		  };
+
+		  return {
+		    createClass: function createClass(config) {
+		      if (rebase) {
+		        return rebase;
+		      }
+		      if (!firebaseApp) {
+		        _validateConfig(config);
+		        firebaseApp = firebase.initializeApp(config);
+		      }
+		      rebase = init();
+		      return rebase;
+		    }
+		  };
+		})();
+
+	/***/ },
+	/* 2 */
+	/***/ function(module, exports) {
+
+		module.exports = __WEBPACK_EXTERNAL_MODULE_2__;
+
+	/***/ },
+	/* 3 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		module.exports = __webpack_require__(4)() ? Symbol : __webpack_require__(5);
+
+
+	/***/ },
+	/* 4 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		var validTypes = { object: true, symbol: true };
+
+		module.exports = function () {
+			var symbol;
+			if (typeof Symbol !== 'function') return false;
+			symbol = Symbol('test symbol');
+			try { String(symbol); } catch (e) { return false; }
+
+			// Return 'true' also for polyfills
+			if (!validTypes[typeof Symbol.iterator]) return false;
+			if (!validTypes[typeof Symbol.toPrimitive]) return false;
+			if (!validTypes[typeof Symbol.toStringTag]) return false;
+
+			return true;
+		};
+
+
+	/***/ },
+	/* 5 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		// ES2015 Symbol polyfill for environments that do not support it (or partially support it)
+
+		'use strict';
+
+		var d              = __webpack_require__(6)
+		  , validateSymbol = __webpack_require__(19)
+
+		  , create = Object.create, defineProperties = Object.defineProperties
+		  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
+		  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null)
+		  , isNativeSafe;
+
+		if (typeof Symbol === 'function') {
+			NativeSymbol = Symbol;
+			try {
+				String(NativeSymbol());
+				isNativeSafe = true;
+			} catch (ignore) {}
+		}
+
+		var generateName = (function () {
+			var created = create(null);
+			return function (desc) {
+				var postfix = 0, name, ie11BugWorkaround;
+				while (created[desc + (postfix || '')]) ++postfix;
+				desc += (postfix || '');
+				created[desc] = true;
+				name = '@@' + desc;
+				defineProperty(objPrototype, name, d.gs(null, function (value) {
+					// For IE11 issue see:
+					// https://connect.microsoft.com/IE/feedbackdetail/view/1928508/
+					//    ie11-broken-getters-on-dom-objects
+					// https://github.com/medikoo/es6-symbol/issues/12
+					if (ie11BugWorkaround) return;
+					ie11BugWorkaround = true;
+					defineProperty(this, name, d(value));
+					ie11BugWorkaround = false;
+				}));
+				return name;
+			};
+		}());
+
+		// Internal constructor (not one exposed) for creating Symbol instances.
+		// This one is used to ensure that `someSymbol instanceof Symbol` always return false
+		HiddenSymbol = function Symbol(description) {
+			if (this instanceof HiddenSymbol) throw new TypeError('TypeError: Symbol is not a constructor');
+			return SymbolPolyfill(description);
+		};
+
+		// Exposed `Symbol` constructor
+		// (returns instances of HiddenSymbol)
+		module.exports = SymbolPolyfill = function Symbol(description) {
+			var symbol;
+			if (this instanceof Symbol) throw new TypeError('TypeError: Symbol is not a constructor');
+			if (isNativeSafe) return NativeSymbol(description);
+			symbol = create(HiddenSymbol.prototype);
+			description = (description === undefined ? '' : String(description));
+			return defineProperties(symbol, {
+				__description__: d('', description),
+				__name__: d('', generateName(description))
+			});
+		};
+		defineProperties(SymbolPolyfill, {
+			for: d(function (key) {
+				if (globalSymbols[key]) return globalSymbols[key];
+				return (globalSymbols[key] = SymbolPolyfill(String(key)));
+			}),
+			keyFor: d(function (s) {
+				var key;
+				validateSymbol(s);
+				for (key in globalSymbols) if (globalSymbols[key] === s) return key;
+			}),
+
+			// If there's native implementation of given symbol, let's fallback to it
+			// to ensure proper interoperability with other native functions e.g. Array.from
+			hasInstance: d('', (NativeSymbol && NativeSymbol.hasInstance) || SymbolPolyfill('hasInstance')),
+			isConcatSpreadable: d('', (NativeSymbol && NativeSymbol.isConcatSpreadable) ||
+				SymbolPolyfill('isConcatSpreadable')),
+			iterator: d('', (NativeSymbol && NativeSymbol.iterator) || SymbolPolyfill('iterator')),
+			match: d('', (NativeSymbol && NativeSymbol.match) || SymbolPolyfill('match')),
+			replace: d('', (NativeSymbol && NativeSymbol.replace) || SymbolPolyfill('replace')),
+			search: d('', (NativeSymbol && NativeSymbol.search) || SymbolPolyfill('search')),
+			species: d('', (NativeSymbol && NativeSymbol.species) || SymbolPolyfill('species')),
+			split: d('', (NativeSymbol && NativeSymbol.split) || SymbolPolyfill('split')),
+			toPrimitive: d('', (NativeSymbol && NativeSymbol.toPrimitive) || SymbolPolyfill('toPrimitive')),
+			toStringTag: d('', (NativeSymbol && NativeSymbol.toStringTag) || SymbolPolyfill('toStringTag')),
+			unscopables: d('', (NativeSymbol && NativeSymbol.unscopables) || SymbolPolyfill('unscopables'))
+		});
+
+		// Internal tweaks for real symbol producer
+		defineProperties(HiddenSymbol.prototype, {
+			constructor: d(SymbolPolyfill),
+			toString: d('', function () { return this.__name__; })
+		});
+
+		// Proper implementation of methods exposed on Symbol.prototype
+		// They won't be accessible on produced symbol instances as they derive from HiddenSymbol.prototype
+		defineProperties(SymbolPolyfill.prototype, {
+			toString: d(function () { return 'Symbol (' + validateSymbol(this).__description__ + ')'; }),
+			valueOf: d(function () { return validateSymbol(this); })
+		});
+		defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('', function () {
+			var symbol = validateSymbol(this);
+			if (typeof symbol === 'symbol') return symbol;
+			return symbol.toString();
+		}));
+		defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d('c', 'Symbol'));
+
+		// Proper implementaton of toPrimitive and toStringTag for returned symbol instances
+		defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
+			d('c', SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
+
+		// Note: It's important to define `toPrimitive` as last one, as some implementations
+		// implement `toPrimitive` natively without implementing `toStringTag` (or other specified symbols)
+		// And that may invoke error in definition flow:
+		// See: https://github.com/medikoo/es6-symbol/issues/13#issuecomment-164146149
+		defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
+			d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
+
+
+	/***/ },
+	/* 6 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var assign        = __webpack_require__(7)
+		  , normalizeOpts = __webpack_require__(14)
+		  , isCallable    = __webpack_require__(15)
+		  , contains      = __webpack_require__(16)
+
+		  , d;
+
+		d = module.exports = function (dscr, value/*, options*/) {
+			var c, e, w, options, desc;
+			if ((arguments.length < 2) || (typeof dscr !== 'string')) {
+				options = value;
+				value = dscr;
+				dscr = null;
+			} else {
+				options = arguments[2];
+			}
+			if (dscr == null) {
+				c = w = true;
+				e = false;
+			} else {
+				c = contains.call(dscr, 'c');
+				e = contains.call(dscr, 'e');
+				w = contains.call(dscr, 'w');
+			}
+
+			desc = { value: value, configurable: c, enumerable: e, writable: w };
+			return !options ? desc : assign(normalizeOpts(options), desc);
+		};
+
+		d.gs = function (dscr, get, set/*, options*/) {
+			var c, e, options, desc;
+			if (typeof dscr !== 'string') {
+				options = set;
+				set = get;
+				get = dscr;
+				dscr = null;
+			} else {
+				options = arguments[3];
+			}
+			if (get == null) {
+				get = undefined;
+			} else if (!isCallable(get)) {
+				options = get;
+				get = set = undefined;
+			} else if (set == null) {
+				set = undefined;
+			} else if (!isCallable(set)) {
+				options = set;
+				set = undefined;
+			}
+			if (dscr == null) {
+				c = true;
+				e = false;
+			} else {
+				c = contains.call(dscr, 'c');
+				e = contains.call(dscr, 'e');
+			}
+
+			desc = { get: get, set: set, configurable: c, enumerable: e };
+			return !options ? desc : assign(normalizeOpts(options), desc);
+		};
+
+
+	/***/ },
+	/* 7 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		module.exports = __webpack_require__(8)()
+			? Object.assign
+			: __webpack_require__(9);
+
+
+	/***/ },
+	/* 8 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		module.exports = function () {
+			var assign = Object.assign, obj;
+			if (typeof assign !== 'function') return false;
+			obj = { foo: 'raz' };
+			assign(obj, { bar: 'dwa' }, { trzy: 'trzy' });
+			return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
+		};
+
+
+	/***/ },
+	/* 9 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var keys  = __webpack_require__(10)
+		  , value = __webpack_require__(13)
+
+		  , max = Math.max;
+
+		module.exports = function (dest, src/*, …srcn*/) {
+			var error, i, l = max(arguments.length, 2), assign;
+			dest = Object(value(dest));
+			assign = function (key) {
+				try { dest[key] = src[key]; } catch (e) {
+					if (!error) error = e;
+				}
+			};
+			for (i = 1; i < l; ++i) {
+				src = arguments[i];
+				keys(src).forEach(assign);
+			}
+			if (error !== undefined) throw error;
+			return dest;
+		};
+
+
+	/***/ },
+	/* 10 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		module.exports = __webpack_require__(11)()
+			? Object.keys
+			: __webpack_require__(12);
+
+
+	/***/ },
+	/* 11 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		module.exports = function () {
+			try {
+				Object.keys('primitive');
+				return true;
+			} catch (e) { return false; }
+		};
+
+
+	/***/ },
+	/* 12 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		var keys = Object.keys;
+
+		module.exports = function (object) {
+			return keys(object == null ? object : Object(object));
+		};
+
+
+	/***/ },
+	/* 13 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		module.exports = function (value) {
+			if (value == null) throw new TypeError("Cannot use null or undefined");
+			return value;
+		};
+
+
+	/***/ },
+	/* 14 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		var forEach = Array.prototype.forEach, create = Object.create;
+
+		var process = function (src, obj) {
+			var key;
+			for (key in src) obj[key] = src[key];
+		};
+
+		module.exports = function (options/*, …options*/) {
+			var result = create(null);
+			forEach.call(arguments, function (options) {
+				if (options == null) return;
+				process(Object(options), result);
+			});
+			return result;
+		};
+
+
+	/***/ },
+	/* 15 */
+	/***/ function(module, exports) {
+
+		// Deprecated
+
+		'use strict';
+
+		module.exports = function (obj) { return typeof obj === 'function'; };
+
+
+	/***/ },
+	/* 16 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		module.exports = __webpack_require__(17)()
+			? String.prototype.contains
+			: __webpack_require__(18);
+
+
+	/***/ },
+	/* 17 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		var str = 'razdwatrzy';
+
+		module.exports = function () {
+			if (typeof str.contains !== 'function') return false;
+			return ((str.contains('dwa') === true) && (str.contains('foo') === false));
+		};
+
+
+	/***/ },
+	/* 18 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		var indexOf = String.prototype.indexOf;
+
+		module.exports = function (searchString/*, position*/) {
+			return indexOf.call(this, searchString, arguments[1]) > -1;
+		};
+
+
+	/***/ },
+	/* 19 */
+	/***/ function(module, exports, __webpack_require__) {
+
+		'use strict';
+
+		var isSymbol = __webpack_require__(20);
+
+		module.exports = function (value) {
+			if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
+			return value;
+		};
+
+
+	/***/ },
+	/* 20 */
+	/***/ function(module, exports) {
+
+		'use strict';
+
+		module.exports = function (x) {
+			if (!x) return false;
+			if (typeof x === 'symbol') return true;
+			if (!x.constructor) return false;
+			if (x.constructor.name !== 'Symbol') return false;
+			return (x[x.constructor.toStringTag] === 'Symbol');
+		};
+
+
+	/***/ }
+	/******/ ])
+	});
+	;
+
+/***/ },
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/**
 	 *  Firebase libraries for browser - npm package.
 	 *
@@ -23059,15 +24210,15 @@
 	 *
 	 *   firebase = require('firebase');
 	 */
-	var firebase = __webpack_require__(198);
-	__webpack_require__(199);
-	__webpack_require__(200);
+	var firebase = __webpack_require__(200);
 	__webpack_require__(201);
+	__webpack_require__(202);
+	__webpack_require__(203);
 	module.exports = firebase;
 
 
 /***/ },
-/* 198 */
+/* 200 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/*! @license Firebase v3.4.1
@@ -23104,10 +24255,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 199 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var firebase = __webpack_require__(198);
+	var firebase = __webpack_require__(200);
 	/*! @license Firebase v3.4.1
 	    Build: 3.4.1-rc.2
 	    Terms: https://developers.google.com/terms */
@@ -23332,10 +24483,10 @@
 
 
 /***/ },
-/* 200 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var firebase = __webpack_require__(198);
+	var firebase = __webpack_require__(200);
 	/*! @license Firebase v3.4.1
 	    Build: 3.4.1-rc.2
 	    Terms: https://developers.google.com/terms */
@@ -23584,10 +24735,10 @@
 
 
 /***/ },
-/* 201 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var firebase = __webpack_require__(198);
+	var firebase = __webpack_require__(200);
 	/*! @license Firebase v3.4.1
 	    Build: 3.4.1-rc.2
 	    Terms: https://developers.google.com/terms */
@@ -23693,837 +24844,6 @@
 	ua.STATE_CHANGED="state_changed";va.RUNNING="running";va.PAUSED="paused";va.SUCCESS="success";va.CANCELED="canceled";va.ERROR="error";Ua.RAW="raw";Ua.BASE64="base64";Ua.BASE64URL="base64url";Ua.DATA_URL="data_url";G.prototype["catch"]=G.prototype.l;G.prototype.then=G.prototype.then;
 	(function(){function a(a){return new Y(a)}var b={TaskState:va,TaskEvent:ua,StringFormat:Ua,Storage:Y,Reference:X};if("undefined"!==typeof firebase)firebase.INTERNAL.registerService("storage",a,b);else throw Error("Cannot install Firebase Storage - be sure to load firebase-app.js first.");})();})();
 	module.exports = firebase.storage;
-
-
-/***/ },
-/* 202 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	 * ReactFire is an open-source JavaScript library that allows you to add a
-	 * realtime data source to your React apps by providing an easy way to let
-	 * Firebase populate the state of React components.
-	 *
-	 * ReactFire 1.0.0
-	 * https://github.com/firebase/reactfire/
-	 * License: MIT
-	 */
-	/* eslint "strict": [2, "function"] */
-	(function(root, factory) {
-	  'use strict';
-
-	  /* istanbul ignore next */
-	  if (true) {
-	    // AMD
-	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() {
-	      return (root.ReactFireMixin = factory());
-	    }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	  } else if (typeof exports === 'object') {
-	    // CommonJS
-	    module.exports = factory();
-	  } else {
-	    // Global variables
-	    root.ReactFireMixin = factory();
-	  }
-	}(this, function() {
-	  'use strict';
-
-	  /*************/
-	  /*  HELPERS  */
-	  /*************/
-	  /**
-	   * Returns the key of a Firebase snapshot across SDK versions.
-	   *
-	   * @param {DataSnapshot} snapshot A Firebase snapshot.
-	   * @return {string|null} key The Firebase snapshot's key.
-	   */
-	  function _getKey(snapshot) {
-	    var key;
-	    if (typeof snapshot.key === 'function') {
-	      key = snapshot.key();
-	    } else if (typeof snapshot.key === 'string' || snapshot.key === null) {
-	      key = snapshot.key;
-	    } else {
-	      key = snapshot.name();
-	    }
-	    return key;
-	  }
-
-	  /**
-	   * Returns the reference of a Firebase snapshot or reference across SDK versions.
-	   *
-	   * @param {DataSnapshot|DatabaseReference} snapshotOrRef A Firebase snapshot or reference.
-	   * @return {DatabaseReference} ref The Firebase reference corresponding to the inputted snapshot
-	   * or reference.
-	   */
-	  function _getRef(snapshotOrRef) {
-	    var ref;
-	    if (typeof snapshotOrRef.ref === 'function') {
-	      ref = snapshotOrRef.ref();
-	    } else {
-	      ref = snapshotOrRef.ref;
-	    }
-	    return ref;
-	  }
-
-	  /**
-	   * Returns the index of the key in the list. If an item with the key is not in the list, -1 is
-	   * returned.
-	   *
-	   * @param {Array<any>} list A list of items.
-	   * @param {string} key The key for which to search.
-	   * @return {number} The index of the item which has the provided key or -1 if no items have the
-	   * provided key.
-	   */
-	  function _indexForKey(list, key) {
-	    for (var i = 0, length = list.length; i < length; ++i) {
-	      if (list[i]['.key'] === key) {
-	        return i;
-	      }
-	    }
-
-	    /* istanbul ignore next */
-	    return -1;
-	  }
-
-	  /**
-	   * Throws a formatted error message.
-	   *
-	   * @param {string} message The error message to throw.
-	   */
-	  function _throwError(message) {
-	    throw new Error('ReactFire: ' + message);
-	  }
-
-	  /**
-	   * Validates the name of the variable which is being bound.
-	   *
-	   * @param {string} bindVar The variable which is being bound.
-	   */
-	  function _validateBindVar(bindVar) {
-	    var errorMessage;
-
-	    if (typeof bindVar !== 'string') {
-	      errorMessage = 'Bind variable must be a string. Got: ' + bindVar;
-	    } else if (bindVar.length === 0) {
-	      errorMessage = 'Bind variable must be a non-empty string. Got: ""';
-	    } else if (bindVar.length > 768) {
-	      // Firebase can only stored child paths up to 768 characters
-	      errorMessage = 'Bind variable is too long to be stored in Firebase. Got: ' + bindVar;
-	    } else if (/[\[\].#$\/\u0000-\u001F\u007F]/.test(bindVar)) {
-	      // Firebase does not allow node keys to contain the following characters
-	      errorMessage = 'Bind variable cannot contain any of the following characters: . # $ ] [ /. Got: ' + bindVar;
-	    }
-
-	    if (typeof errorMessage !== 'undefined') {
-	      _throwError(errorMessage);
-	    }
-	  }
-
-	  /**
-	   * Creates a new record given a key-value pair.
-	   *
-	   * @param {string} key The new record's key.
-	   * @param {any} value The new record's value.
-	   * @return {Object} The new record.
-	   */
-	  function _createRecord(key, value) {
-	    var record = {};
-	    if (typeof value === 'object' && value !== null) {
-	      record = value;
-	    } else {
-	      record['.value'] = value;
-	    }
-	    record['.key'] = key;
-
-	    return record;
-	  }
-
-
-	  /******************************/
-	  /*  BIND AS OBJECT LISTENERS  */
-	  /******************************/
-	  /**
-	   * 'value' listener which updates the value of the bound state variable.
-	   *
-	   * @param {string} bindVar The state variable to which the data is being bound.
-	   * @param {Firebase.DataSnapshot} snapshot A snapshot of the data being bound.
-	   */
-	  function _objectValue(bindVar, snapshot) {
-	    var key = _getKey(snapshot);
-	    var value = snapshot.val();
-
-	    this.data[bindVar] = _createRecord(key, value);
-
-	    this.setState(this.data);
-	  }
-
-
-	  /*****************************/
-	  /*  BIND AS ARRAY LISTENERS  */
-	  /*****************************/
-	  /**
-	   * 'child_added' listener which adds a new record to the bound array.
-	   *
-	   * @param {string} bindVar The state variable to which the data is being bound.
-	   * @param {Firebase.DataSnapshot} snapshot A snapshot of the data being bound.
-	   * @param {string|null} previousChildKey The key of the child after which the provided snapshot
-	   * is positioned; null if the provided snapshot is in the first position.
-	   */
-	  function _arrayChildAdded(bindVar, snapshot, previousChildKey) {
-	    var key = _getKey(snapshot);
-	    var value = snapshot.val();
-	    var array = this.data[bindVar];
-
-	    // Determine where to insert the new record
-	    var insertionIndex;
-	    if (previousChildKey === null) {
-	      insertionIndex = 0;
-	    } else {
-	      var previousChildIndex = _indexForKey(array, previousChildKey);
-	      insertionIndex = previousChildIndex + 1;
-	    }
-
-	    // Add the new record to the array
-	    array.splice(insertionIndex, 0, _createRecord(key, value));
-
-	    // Update state
-	    this.setState(this.data);
-	  }
-
-	  /**
-	   * 'child_removed' listener which removes a record from the bound array.
-	   *
-	   * @param {string} bindVar The state variable to which the data is bound.
-	   * @param {Firebase.DataSnapshot} snapshot A snapshot of the bound data.
-	   */
-	  function _arrayChildRemoved(bindVar, snapshot) {
-	    var array = this.data[bindVar];
-
-	    // Look up the record's index in the array
-	    var index = _indexForKey(array, _getKey(snapshot));
-
-	    // Splice out the record from the array
-	    array.splice(index, 1);
-
-	    // Update state
-	    this.setState(this.data);
-	  }
-
-	  /**
-	   * 'child_changed' listener which updates a record's value in the bound array.
-	   *
-	   * @param {string} bindVar The state variable to which the data is bound.
-	   * @param {Firebase.DataSnapshot} snapshot A snapshot of the data to bind.
-	   */
-	  function _arrayChildChanged(bindVar, snapshot) {
-	    var key = _getKey(snapshot);
-	    var value = snapshot.val();
-	    var array = this.data[bindVar];
-
-	    // Look up the record's index in the array
-	    var index = _indexForKey(array, key);
-
-	    // Update the record's value in the array
-	    array[index] = _createRecord(key, value);
-
-	    // Update state
-	    this.setState(this.data);
-	  }
-
-	  /**
-	   * 'child_moved' listener which updates a record's position in the bound array.
-	   *
-	   * @param {string} bindVar The state variable to which the data is bound.
-	   * @param {Firebase.DataSnapshot} snapshot A snapshot of the bound data.
-	   * @param {string|null} previousChildKey The key of the child after which the provided snapshot
-	   * is positioned; null if the provided snapshot is in the first position.
-	   */
-	  function _arrayChildMoved(bindVar, snapshot, previousChildKey) {
-	    var key = _getKey(snapshot);
-	    var array = this.data[bindVar];
-
-	    // Look up the record's index in the array
-	    var currentIndex = _indexForKey(array, key);
-
-	    // Splice out the record from the array
-	    var record = array.splice(currentIndex, 1)[0];
-
-	    // Determine where to re-insert the record
-	    var insertionIndex;
-	    if (previousChildKey === null) {
-	      insertionIndex = 0;
-	    } else {
-	      var previousChildIndex = _indexForKey(array, previousChildKey);
-	      insertionIndex = previousChildIndex + 1;
-	    }
-
-	    // Re-insert the record into the array
-	    array.splice(insertionIndex, 0, record);
-
-	    // Update state
-	    this.setState(this.data);
-	  }
-
-
-	  /*************/
-	  /*  BINDING  */
-	  /*************/
-	  /**
-	   * Creates a binding between Firebase and the inputted bind variable as either an array or
-	   * an object.
-	   *
-	   * @param {Firebase} firebaseRef The Firebase ref whose data to bind.
-	   * @param {string} bindVar The state variable to which to bind the data.
-	   * @param {function} cancelCallback The Firebase reference's cancel callback.
-	   * @param {boolean} bindAsArray Whether or not to bind as an array or object.
-	   */
-	  function _bind(firebaseRef, bindVar, cancelCallback, bindAsArray) {
-	    if (Object.prototype.toString.call(firebaseRef) !== '[object Object]') {
-	      _throwError('Invalid Firebase reference');
-	    }
-
-	    _validateBindVar(bindVar);
-
-	    if (typeof this.firebaseRefs[bindVar] !== 'undefined') {
-	      _throwError('this.state.' + bindVar + ' is already bound to a Firebase reference');
-	    }
-
-	    // Keep track of the Firebase reference we are setting up listeners on
-	    this.firebaseRefs[bindVar] = _getRef(firebaseRef);
-
-	    if (bindAsArray) {
-	      // Set initial state to an empty array
-	      this.data[bindVar] = [];
-	      this.setState(this.data);
-
-	      // Add listeners for all 'child_*' events
-	      this.firebaseListeners[bindVar] = {
-	        child_added: firebaseRef.on('child_added', _arrayChildAdded.bind(this, bindVar), cancelCallback),
-	        child_removed: firebaseRef.on('child_removed', _arrayChildRemoved.bind(this, bindVar), cancelCallback),
-	        child_changed: firebaseRef.on('child_changed', _arrayChildChanged.bind(this, bindVar), cancelCallback),
-	        child_moved: firebaseRef.on('child_moved', _arrayChildMoved.bind(this, bindVar), cancelCallback)
-	      };
-	    } else {
-	      // Add listener for 'value' event
-	      this.firebaseListeners[bindVar] = {
-	        value: firebaseRef.on('value', _objectValue.bind(this, bindVar), cancelCallback)
-	      };
-	    }
-	  }
-
-
-	  var ReactFireMixin = {
-	    /********************/
-	    /*  MIXIN LIFETIME  */
-	    /********************/
-	    /**
-	     * Initializes the Firebase refs and listeners arrays.
-	     **/
-	    componentWillMount: function() {
-	      this.data = {};
-	      this.firebaseRefs = {};
-	      this.firebaseListeners = {};
-	    },
-
-	    /**
-	     * Unbinds any remaining Firebase listeners.
-	     */
-	    componentWillUnmount: function() {
-	      for (var bindVar in this.firebaseRefs) {
-	        /* istanbul ignore else */
-	        if (this.firebaseRefs.hasOwnProperty(bindVar)) {
-	          this.unbind(bindVar);
-	        }
-	      }
-	    },
-
-
-	    /*************/
-	    /*  BINDING  */
-	    /*************/
-	    /**
-	     * Creates a binding between Firebase and the inputted bind variable as an array.
-	     *
-	     * @param {Firebase} firebaseRef The Firebase ref whose data to bind.
-	     * @param {string} bindVar The state variable to which to bind the data.
-	     * @param {function} cancelCallback The Firebase reference's cancel callback.
-	     */
-	    bindAsArray: function(firebaseRef, bindVar, cancelCallback) {
-	      var bindPartial = _bind.bind(this);
-	      bindPartial(firebaseRef, bindVar, cancelCallback, /* bindAsArray */ true);
-	    },
-
-	    /**
-	     * Creates a binding between Firebase and the inputted bind variable as an object.
-	     *
-	     * @param {Firebase} firebaseRef The Firebase ref whose data to bind.
-	     * @param {string} bindVar The state variable to which to bind the data.
-	     * @param {function} cancelCallback The Firebase reference's cancel callback.
-	     */
-	    bindAsObject: function(firebaseRef, bindVar, cancelCallback) {
-	      var bindPartial = _bind.bind(this);
-	      bindPartial(firebaseRef, bindVar, cancelCallback, /* bindAsArray */ false);
-	    },
-
-	    /**
-	     * Removes the binding between Firebase and the inputted bind variable.
-	     *
-	     * @param {string} bindVar The state variable to which the data is bound.
-	     * @param {function} callback Called when the data is unbound and the state has been updated.
-	     */
-	    unbind: function(bindVar, callback) {
-	      _validateBindVar(bindVar);
-
-	      if (typeof this.firebaseRefs[bindVar] === 'undefined') {
-	        _throwError('this.state.' + bindVar + ' is not bound to a Firebase reference');
-	      }
-
-	      // Turn off all Firebase listeners
-	      for (var event in this.firebaseListeners[bindVar]) {
-	        /* istanbul ignore else */
-	        if (this.firebaseListeners[bindVar].hasOwnProperty(event)) {
-	          var offListener = this.firebaseListeners[bindVar][event];
-	          this.firebaseRefs[bindVar].off(event, offListener);
-	        }
-	      }
-	      delete this.firebaseRefs[bindVar];
-	      delete this.firebaseListeners[bindVar];
-
-	      // Update state
-	      var newState = {};
-	      newState[bindVar] = undefined;
-	      this.setState(newState, callback);
-	    }
-	  };
-
-	  return ReactFireMixin;
-	}));
-
-
-/***/ },
-/* 203 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var mixin = __webpack_require__(204);
-	var assign = __webpack_require__(205);
-
-	var mixinProto = mixin({
-	  // lifecycle stuff is as you'd expect
-	  componentDidMount: mixin.MANY,
-	  componentWillMount: mixin.MANY,
-	  componentWillReceiveProps: mixin.MANY,
-	  shouldComponentUpdate: mixin.ONCE,
-	  componentWillUpdate: mixin.MANY,
-	  componentDidUpdate: mixin.MANY,
-	  componentWillUnmount: mixin.MANY,
-	  getChildContext: mixin.MANY_MERGED
-	});
-
-	function setDefaultProps(reactMixin) {
-	  var getDefaultProps = reactMixin.getDefaultProps;
-
-	  if (getDefaultProps) {
-	    reactMixin.defaultProps = getDefaultProps();
-
-	    delete reactMixin.getDefaultProps;
-	  }
-	}
-
-	function setInitialState(reactMixin) {
-	  var getInitialState = reactMixin.getInitialState;
-	  var componentWillMount = reactMixin.componentWillMount;
-
-	  function applyInitialState(instance) {
-	    var state = instance.state || {};
-	    assign(state, getInitialState.call(instance));
-	    instance.state = state;
-	  }
-
-	  if (getInitialState) {
-	    if (!componentWillMount) {
-	      reactMixin.componentWillMount = function() {
-	        applyInitialState(this);
-	      };
-	    } else {
-	      reactMixin.componentWillMount = function() {
-	        applyInitialState(this);
-	        componentWillMount.call(this);
-	      };
-	    }
-
-	    delete reactMixin.getInitialState;
-	  }
-	}
-
-	function mixinClass(reactClass, reactMixin) {
-	  setDefaultProps(reactMixin);
-	  setInitialState(reactMixin);
-
-	  var prototypeMethods = {};
-	  var staticProps = {};
-
-	  Object.keys(reactMixin).forEach(function(key) {
-	    if (key === 'mixins') {
-	      return; // Handled below to ensure proper order regardless of property iteration order
-	    }
-	    if (key === 'statics') {
-	      return; // gets special handling
-	    } else if (typeof reactMixin[key] === 'function') {
-	      prototypeMethods[key] = reactMixin[key];
-	    } else {
-	      staticProps[key] = reactMixin[key];
-	    }
-	  });
-
-	  mixinProto(reactClass.prototype, prototypeMethods);
-
-	  var mergePropTypes = function(left, right, key) {
-	    if (!left) return right;
-	    if (!right) return left;
-
-	    var result = {};
-	    Object.keys(left).forEach(function(leftKey) {
-	      if (!right[leftKey]) {
-	        result[leftKey] = left[leftKey];
-	      }
-	    });
-
-	    Object.keys(right).forEach(function(rightKey) {
-	      if (left[rightKey]) {
-	        result[rightKey] = function checkBothContextTypes() {
-	          return right[rightKey].apply(this, arguments) && left[rightKey].apply(this, arguments);
-	        };
-	      } else {
-	        result[rightKey] = right[rightKey];
-	      }
-	    });
-
-	    return result;
-	  };
-
-	  mixin({
-	    childContextTypes: mergePropTypes,
-	    contextTypes: mergePropTypes,
-	    propTypes: mixin.MANY_MERGED_LOOSE,
-	    defaultProps: mixin.MANY_MERGED_LOOSE
-	  })(reactClass, staticProps);
-
-	  // statics is a special case because it merges directly onto the class
-	  if (reactMixin.statics) {
-	    Object.getOwnPropertyNames(reactMixin.statics).forEach(function(key) {
-	      var left = reactClass[key];
-	      var right = reactMixin.statics[key];
-
-	      if (left !== undefined && right !== undefined) {
-	        throw new TypeError('Cannot mixin statics because statics.' + key + ' and Component.' + key + ' are defined.');
-	      }
-
-	      reactClass[key] = left !== undefined ? left : right;
-	    });
-	  }
-
-	  // If more mixins are defined, they need to run. This emulate's react's behavior.
-	  // See behavior in code at:
-	  // https://github.com/facebook/react/blob/41aa3496aa632634f650edbe10d617799922d265/src/isomorphic/classic/class/ReactClass.js#L468
-	  // Note the .reverse(). In React, a fresh constructor is created, then all mixins are mixed in recursively,
-	  // then the actual spec is mixed in last.
-	  //
-	  // With ES6 classes, the properties are already there, so smart-mixin mixes functions (a, b) -> b()a(), which is
-	  // the opposite of how React does it. If we reverse this array, we basically do the whole logic in reverse,
-	  // which makes the result the same. See the test for more.
-	  // See also:
-	  // https://github.com/facebook/react/blob/41aa3496aa632634f650edbe10d617799922d265/src/isomorphic/classic/class/ReactClass.js#L853
-	  if (reactMixin.mixins) {
-	    reactMixin.mixins.reverse().forEach(mixinClass.bind(null, reactClass));
-	  }
-
-	  return reactClass;
-	}
-
-	module.exports = (function() {
-	  var reactMixin = mixinProto;
-
-	  reactMixin.onClass = function(reactClass, mixin) {
-	    // we mutate the mixin so let's clone it
-	    mixin = assign({}, mixin);
-	    return mixinClass(reactClass, mixin);
-	  };
-
-	  reactMixin.decorate = function(mixin) {
-	    return function(reactClass) {
-	      return reactMixin.onClass(reactClass, mixin);
-	    };
-	  };
-
-	  return reactMixin;
-	})();
-
-
-/***/ },
-/* 204 */
-/***/ function(module, exports) {
-
-	function objToStr(x){ return Object.prototype.toString.call(x); };
-
-	function returner(x) { return x; }
-
-	function wrapIfFunction(thing){
-	    return typeof thing !== "function" ? thing
-	    : function(){
-	        return thing.apply(this, arguments);
-	    };
-	}
-
-	function setNonEnumerable(target, key, value){
-	    if (key in target){
-	        target[key] = value;
-	    }
-	    else {
-	        Object.defineProperty(target, key, {
-	            value: value,
-	            writable: true,
-	            configurable: true
-	        });
-	    }
-	}
-
-	function defaultNonFunctionProperty(left, right, key){
-	    if (left !== undefined && right !== undefined) {
-	        var getTypeName = function(obj){
-	            if (obj && obj.constructor && obj.constructor.name) {
-	                return obj.constructor.name;
-	            }
-	            else {
-	                return objToStr(obj).slice(8, -1);
-	            }
-	        };
-	        throw new TypeError('Cannot mixin key ' + key + ' because it is provided by multiple sources, '
-	                + 'and the types are ' + getTypeName(left) + ' and ' + getTypeName(right));
-	    }
-	    return left === undefined ? right : left;
-	};
-
-	function assertObject(obj, obj2){
-	    var type = objToStr(obj);
-	    if (type !== '[object Object]') {
-	        var displayType = obj.constructor ? obj.constructor.name : 'Unknown';
-	        var displayType2 = obj2.constructor ? obj2.constructor.name : 'Unknown';
-	        throw new Error('cannot merge returned value of type ' + displayType + ' with an ' + displayType2);
-	    }
-	};
-
-
-	var mixins = module.exports = function makeMixinFunction(rules, _opts){
-	    var opts = _opts || {};
-
-	    if (!opts.unknownFunction) {
-	        opts.unknownFunction = mixins.ONCE;
-	    }
-
-	    if (!opts.nonFunctionProperty) {
-	        opts.nonFunctionProperty = defaultNonFunctionProperty;
-	    }
-
-	    return function applyMixin(source, mixin){
-	        Object.keys(mixin).forEach(function(key){
-	            var left = source[key], right = mixin[key], rule = rules[key];
-
-	            // this is just a weird case where the key was defined, but there's no value
-	            // behave like the key wasn't defined
-	            if (left === undefined && right === undefined) return;
-
-	            // do we have a rule for this key?
-	            if (rule) {
-	                // may throw here
-	                var fn = rule(left, right, key);
-	                setNonEnumerable(source, key, wrapIfFunction(fn));
-	                return;
-	            }
-
-	            var leftIsFn = typeof left === "function";
-	            var rightIsFn = typeof right === "function";
-
-	            // check to see if they're some combination of functions or undefined
-	            // we already know there's no rule, so use the unknown function behavior
-	            if (leftIsFn && right === undefined
-	             || rightIsFn && left === undefined
-	             || leftIsFn && rightIsFn) {
-	                // may throw, the default is ONCE so if both are functions
-	                // the default is to throw
-	                setNonEnumerable(source, key, wrapIfFunction(opts.unknownFunction(left, right, key)));
-	                return;
-	            }
-
-	            // we have no rule for them, one may be a function but one or both aren't
-	            // our default is MANY_MERGED_LOOSE which will merge objects, concat arrays
-	            // and throw if there's a type mismatch or both are primitives (how do you merge 3, and "foo"?)
-	            source[key] = opts.nonFunctionProperty(left, right, key);
-	        });
-	    };
-	};
-
-	mixins._mergeObjects = function(obj1, obj2) {
-	    if (Array.isArray(obj1) && Array.isArray(obj2)) {
-	        return obj1.concat(obj2);
-	    }
-
-	    assertObject(obj1, obj2);
-	    assertObject(obj2, obj1);
-
-	    var result = {};
-	    Object.keys(obj1).forEach(function(k){
-	        if (Object.prototype.hasOwnProperty.call(obj2, k)) {
-	            throw new Error('cannot merge returns because both have the ' + JSON.stringify(k) + ' key');
-	        }
-	        result[k] = obj1[k];
-	    });
-
-	    Object.keys(obj2).forEach(function(k){
-	        // we can skip the conflict check because all conflicts would already be found
-	        result[k] = obj2[k];
-	    });
-	    return result;
-	};
-
-	// define our built-in mixin types
-	mixins.ONCE = function(left, right, key){
-	    if (left && right) {
-	        throw new TypeError('Cannot mixin ' + key + ' because it has a unique constraint.');
-	    }
-	    return left || right;
-	};
-
-	mixins.MANY = function(left, right, key){
-	    return function(){
-	        if (right) right.apply(this, arguments);
-	        return left ? left.apply(this, arguments) : undefined;
-	    };
-	};
-
-	mixins.MANY_MERGED_LOOSE = function(left, right, key) {
-	    if (left && right) {
-	        return mixins._mergeObjects(left, right);
-	    }
-	    return left || right;
-	};
-
-	mixins.MANY_MERGED = function(left, right, key){
-	    return function(){
-	        var res1 = right && right.apply(this, arguments);
-	        var res2 = left && left.apply(this, arguments);
-	        if (res1 && res2) {
-	            return mixins._mergeObjects(res1, res2)
-	        }
-	        return res2 || res1;
-	    };
-	};
-
-	mixins.REDUCE_LEFT = function(_left, _right, key){
-	    var left = _left || returner;
-	    var right = _right || returner;
-	    return function(){
-	        return right.call(this, left.apply(this, arguments));
-	    };
-	};
-
-	mixins.REDUCE_RIGHT = function(_left, _right, key){
-	    var left = _left || returner;
-	    var right = _right || returner;
-	    return function(){
-	        return left.call(this, right.apply(this, arguments));
-	    };
-	};
-
-
-
-/***/ },
-/* 205 */
-/***/ function(module, exports) {
-
-	'use strict';
-	/* eslint-disable no-unused-vars */
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-	var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-	function toObject(val) {
-		if (val === null || val === undefined) {
-			throw new TypeError('Object.assign cannot be called with null or undefined');
-		}
-
-		return Object(val);
-	}
-
-	function shouldUseNative() {
-		try {
-			if (!Object.assign) {
-				return false;
-			}
-
-			// Detect buggy property enumeration order in older V8 versions.
-
-			// https://bugs.chromium.org/p/v8/issues/detail?id=4118
-			var test1 = new String('abc');  // eslint-disable-line
-			test1[5] = 'de';
-			if (Object.getOwnPropertyNames(test1)[0] === '5') {
-				return false;
-			}
-
-			// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-			var test2 = {};
-			for (var i = 0; i < 10; i++) {
-				test2['_' + String.fromCharCode(i)] = i;
-			}
-			var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
-				return test2[n];
-			});
-			if (order2.join('') !== '0123456789') {
-				return false;
-			}
-
-			// https://bugs.chromium.org/p/v8/issues/detail?id=3056
-			var test3 = {};
-			'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
-				test3[letter] = letter;
-			});
-			if (Object.keys(Object.assign({}, test3)).join('') !==
-					'abcdefghijklmnopqrst') {
-				return false;
-			}
-
-			return true;
-		} catch (e) {
-			// We don't expect any of the above to throw, but better to be safe.
-			return false;
-		}
-	}
-
-	module.exports = shouldUseNative() ? Object.assign : function (target, source) {
-		var from;
-		var to = toObject(target);
-		var symbols;
-
-		for (var s = 1; s < arguments.length; s++) {
-			from = Object(arguments[s]);
-
-			for (var key in from) {
-				if (hasOwnProperty.call(from, key)) {
-					to[key] = from[key];
-				}
-			}
-
-			if (Object.getOwnPropertySymbols) {
-				symbols = Object.getOwnPropertySymbols(from);
-				for (var i = 0; i < symbols.length; i++) {
-					if (propIsEnumerable.call(from, symbols[i])) {
-						to[symbols[i]] = from[symbols[i]];
-					}
-				}
-			}
-		}
-
-		return to;
-	};
 
 
 /***/ }
