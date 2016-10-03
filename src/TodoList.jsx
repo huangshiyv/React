@@ -9,7 +9,10 @@ const Todo = ({todo, remove,index}) => {
       <td>{todo.item}</td>
       <td>{todo.amount}</td>
       <td>
-      	
+      	  <button
+            className="glyphicon glyphicon-remove" style={{color: 'rgb(222,79,79)', border: 'none', background:'none'}}
+            onClick={() => {remove(index)}}
+          />
      </td>
     </tr>
   	);
@@ -19,7 +22,7 @@ const Todo = ({todo, remove,index}) => {
 const TodoList = ({todos, remove}) => {
   // Map through the todos
   const todoNode = todos.map((todo,index) => {
-    return (<Todo todo={todo} key={index} index={index} emove={remove}/>)
+    return (<Todo todo={todo} key={index} index={index} remove={remove}/>)
   });
   return (
   	<div className="list-group" style={{marginTop:'30px'}}>

@@ -157,8 +157,12 @@
 	      return _react2.default.createElement(
 	        'div',
 	        null,
-	        _react2.default.createElement(_Title2.default, { todoCount: this.state.data.length }),
-	        _react2.default.createElement(_TodoForm2.default, { addTodo: this.addTodo.bind(this), date: new Date().toDateInputValue() }),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'col-md-4 col-md-offset-4' },
+	          _react2.default.createElement(_Title2.default, { todoCount: this.state.data.length }),
+	          _react2.default.createElement(_TodoForm2.default, { addTodo: this.addTodo.bind(this), date: new Date().toDateInputValue() })
+	        ),
 	        _react2.default.createElement(_TodoList2.default, {
 	          todos: this.state.data,
 	          remove: this.handleRemove.bind(this)
@@ -23065,7 +23069,16 @@
 	      null,
 	      todo.amount
 	    ),
-	    _react2.default.createElement("td", null)
+	    _react2.default.createElement(
+	      "td",
+	      null,
+	      _react2.default.createElement("button", {
+	        className: "glyphicon glyphicon-remove", style: { color: 'rgb(222,79,79)', border: 'none', background: 'none' },
+	        onClick: function onClick() {
+	          remove(index);
+	        }
+	      })
+	    )
 	  );
 	  //return (<a href="#" className="list-group-item" onClick={() => {remove(todo.id)}}>{todo.text}</a>);
 	};
@@ -23076,7 +23089,7 @@
 
 	  // Map through the todos
 	  var todoNode = todos.map(function (todo, index) {
-	    return _react2.default.createElement(Todo, { todo: todo, key: index, index: index, emove: remove });
+	    return _react2.default.createElement(Todo, { todo: todo, key: index, index: index, remove: remove });
 	  });
 	  return _react2.default.createElement(
 	    "div",

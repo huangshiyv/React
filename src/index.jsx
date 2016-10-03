@@ -64,8 +64,10 @@ class TodoApp extends React.Component{
     // Render JSX
     return (
       <div>
+      <div className="col-md-4 col-md-offset-4">
         <Title todoCount={this.state.data.length}/>
         <TodoForm addTodo={this.addTodo.bind(this)} date={new Date().toDateInputValue()} />
+      </div> 
         <TodoList
           todos={this.state.data}
           remove={this.handleRemove.bind(this)}
