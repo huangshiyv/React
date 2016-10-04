@@ -4,7 +4,7 @@
   "description": "React Router Aricle for Scotch",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack -d --watch",
+    "watch": "webpack -d --watch --progress --colors",
     "build": "webpack",
     "serve": "serve ./public",
     "start": "nodemon"
@@ -17,13 +17,15 @@
     "babel-preset-react": "^6.11.1",
     "nodemon": "^1.10.2",
     "serve": "^1.4.0",
-    "webpack": "^1.13.1"
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.16.1"
   },
   "dependencies": {
     "axios": "^0.14.0",
     "express": "^4.14.0",
     "firebase": "^3.4.1",
     "history": "^3.0.0",
+    "re-base": "^2.2.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.0",
     "react-mixin": "^3.0.5",
