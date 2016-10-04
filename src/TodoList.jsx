@@ -34,9 +34,9 @@ const TodoList = ({todos, remove}) => {
          <thead className="thead-inverse">
           <tr>
               <th>#</th>
-              <th>Time</th>
-              <th>Item</th>
-              <th>Amount</th>
+              <th>时间</th>
+              <th>花销项目</th>
+              <th>金额</th>
               <th></th>
           </tr>
         </thead>
@@ -47,7 +47,7 @@ const TodoList = ({todos, remove}) => {
     return (
        <tr>
            <th scope="row" colSpan="2"></th>
-           <td>Total: </td>
+           <td>总额: </td>
            <td>{val}</td>
            <td></td>
            </tr>

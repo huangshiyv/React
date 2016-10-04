@@ -23556,43 +23556,70 @@
 	    { onSubmit: onSubmit },
 	    _react2.default.createElement(
 	      'div',
-	      { className: 'form-group' },
+	      { className: 'form-group form-group-lg' },
 	      _react2.default.createElement(
 	        'label',
 	        { htmlFor: 'date' },
 	        '\u65F6\u95F4'
 	      ),
-	      _react2.default.createElement('input', { type: 'date', className: 'form-control', id: 'date', defaultValue: date, placeholder: 'date', ref: function ref(node) {
-	          dateInput = node;
-	        } })
+	      _react2.default.createElement(
+	        'div',
+	        { className: 'input-group ' },
+	        _react2.default.createElement(
+	          'span',
+	          { className: 'input-group-addon' },
+	          _react2.default.createElement('span', { className: 'glyphicon glyphicon-time' })
+	        ),
+	        _react2.default.createElement('input', { type: 'date', className: 'form-control', id: 'date', defaultValue: date, placeholder: 'date', ref: function ref(node) {
+	            dateInput = node;
+	          } })
+	      )
 	    ),
 	    _react2.default.createElement(
 	      'div',
-	      { className: 'form-group' },
+	      { className: 'form-group form-group-lg' },
 	      _react2.default.createElement(
 	        'label',
 	        { htmlFor: 'detail' },
 	        '\u82B1\u9500\u9879\u76EE'
 	      ),
-	      _react2.default.createElement('input', { type: 'text', className: 'form-control', id: 'detail', placeholder: 'Detail', ref: function ref(node) {
-	          itemInput = node;
-	        } })
+	      _react2.default.createElement(
+	        'div',
+	        { className: 'input-group' },
+	        _react2.default.createElement(
+	          'span',
+	          { className: 'input-group-addon' },
+	          _react2.default.createElement('span', { className: 'glyphicon glyphicon-piggy-bank' })
+	        ),
+	        _react2.default.createElement('input', { type: 'text', className: 'form-control', id: 'detail', placeholder: 'Detail', ref: function ref(node) {
+	            itemInput = node;
+	          } })
+	      )
 	    ),
 	    _react2.default.createElement(
 	      'div',
-	      { className: 'form-group' },
+	      { className: 'form-group form-group-lg' },
 	      _react2.default.createElement(
 	        'label',
 	        { htmlFor: 'amount' },
 	        '\u91D1\u989D'
 	      ),
-	      _react2.default.createElement('input', { type: 'number', className: 'form-control', id: 'amount', step: '0.01', placeholder: 'amount', ref: function ref(node) {
-	          amountInput = node;
-	        } })
+	      _react2.default.createElement(
+	        'div',
+	        { className: 'input-group' },
+	        _react2.default.createElement(
+	          'span',
+	          { className: 'input-group-addon' },
+	          _react2.default.createElement('span', { className: 'glyphicon glyphicon-euro' })
+	        ),
+	        _react2.default.createElement('input', { type: 'number', className: 'form-control', id: 'amount', step: '0.01', placeholder: 'amount', ref: function ref(node) {
+	            amountInput = node;
+	          } })
+	      )
 	    ),
 	    _react2.default.createElement(
 	      'div',
-	      { className: 'form-group' },
+	      { className: 'form-group form-group-lg' },
 	      _react2.default.createElement(
 	        'label',
 	        { htmlFor: 'description' },
@@ -23604,8 +23631,8 @@
 	    ),
 	    _react2.default.createElement(
 	      'button',
-	      { type: 'submit', className: 'btn btn-default' },
-	      'Submit'
+	      { type: 'submit', className: 'btn btn-primary' },
+	      '\u63D0\u4EA4'
 	    )
 	  );
 	};
@@ -23700,17 +23727,17 @@
 	        _react2.default.createElement(
 	          "th",
 	          null,
-	          "Time"
+	          "\u65F6\u95F4"
 	        ),
 	        _react2.default.createElement(
 	          "th",
 	          null,
-	          "Item"
+	          "\u82B1\u9500\u9879\u76EE"
 	        ),
 	        _react2.default.createElement(
 	          "th",
 	          null,
-	          "Amount"
+	          "\u91D1\u989D"
 	        ),
 	        _react2.default.createElement("th", null)
 	      )
@@ -23725,7 +23752,7 @@
 	      _react2.default.createElement(
 	        "td",
 	        null,
-	        "Total: "
+	        "\u603B\u989D: "
 	      ),
 	      _react2.default.createElement(
 	        "td",
@@ -24909,9 +24936,9 @@
 
 /***/ },
 /* 199 */
-/*!**************************************************!*\
-  !*** ./~/re-base/~/firebase/firebase-browser.js ***!
-  \**************************************************/
+/*!****************************************!*\
+  !*** ./~/firebase/firebase-browser.js ***!
+  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24930,9 +24957,9 @@
 
 /***/ },
 /* 200 */
-/*!*************************************!*\
-  !*** ./~/re-base/~/firebase/app.js ***!
-  \*************************************/
+/*!***************************!*\
+  !*** ./~/firebase/app.js ***!
+  \***************************/
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/*! @license Firebase v3.4.1
@@ -24970,9 +24997,9 @@
 
 /***/ },
 /* 201 */
-/*!**************************************!*\
-  !*** ./~/re-base/~/firebase/auth.js ***!
-  \**************************************/
+/*!****************************!*\
+  !*** ./~/firebase/auth.js ***!
+  \****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
@@ -25201,9 +25228,9 @@
 
 /***/ },
 /* 202 */
-/*!******************************************!*\
-  !*** ./~/re-base/~/firebase/database.js ***!
-  \******************************************/
+/*!********************************!*\
+  !*** ./~/firebase/database.js ***!
+  \********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
@@ -25456,9 +25483,9 @@
 
 /***/ },
 /* 203 */
-/*!*****************************************!*\
-  !*** ./~/re-base/~/firebase/storage.js ***!
-  \*****************************************/
+/*!*******************************!*\
+  !*** ./~/firebase/storage.js ***!
+  \*******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
