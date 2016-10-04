@@ -22,9 +22,12 @@ const Todo = ({todo, remove,index}) => {
 
 const TodoList = ({todos, remove}) => {
   // Map through the todos
+  let total = 0;
   const todoNode = todos.map((todo,index) => {
+    total  = total + parseFloat(todo.amount);
     return (<Todo todo={todo} key={index} index={index} remove={remove}/>);
   });
+
 
   const tableTitle = () => {
     return (
@@ -40,12 +43,12 @@ const TodoList = ({todos, remove}) => {
       );
   };
   
-  const tableTotal = () => {
+  const tableTotal = (val) => {
     return (
        <tr>
            <th scope="row" colSpan="2"></th>
            <td>Total: </td>
-           <td></td>
+           <td>{val}</td>
            <td></td>
            </tr>
       );
@@ -57,7 +60,7 @@ const TodoList = ({todos, remove}) => {
 	  	   {tableTitle()}
 	  		 <tbody>
   				{todoNode}
-          {tableTotal()}
+          {tableTotal(total)}
   			 </tbody>
   		</table>
   	</div>

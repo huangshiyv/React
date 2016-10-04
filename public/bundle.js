@@ -23679,7 +23679,9 @@
 	  var remove = _ref2.remove;
 	
 	  // Map through the todos
+	  var total = 0;
 	  var todoNode = todos.map(function (todo, index) {
+	    total = total + parseFloat(todo.amount);
 	    return _react2.default.createElement(Todo, { todo: todo, key: index, index: index, remove: remove });
 	  });
 	
@@ -23715,7 +23717,7 @@
 	    );
 	  };
 	
-	  var tableTotal = function tableTotal() {
+	  var tableTotal = function tableTotal(val) {
 	    return _react2.default.createElement(
 	      "tr",
 	      null,
@@ -23725,7 +23727,11 @@
 	        null,
 	        "Total: "
 	      ),
-	      _react2.default.createElement("td", null),
+	      _react2.default.createElement(
+	        "td",
+	        null,
+	        val
+	      ),
 	      _react2.default.createElement("td", null)
 	    );
 	  };
@@ -23741,7 +23747,7 @@
 	        "tbody",
 	        null,
 	        todoNode,
-	        tableTotal()
+	        tableTotal(total)
 	      )
 	    )
 	  );
