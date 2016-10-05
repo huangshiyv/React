@@ -18,6 +18,9 @@ const TodoForm = ({addTodo,date}) => {
     };
     addTodo(inputValue);
     itemInput.value = '';
+    amountInput.value = '';
+    descriptionInput.value ='';
+    dateInput.value = date;
   };
 
   return (
@@ -28,7 +31,7 @@ const TodoForm = ({addTodo,date}) => {
           <span className="input-group-addon">
            <span className="glyphicon glyphicon-time" ></span>
            </span>
-          <input type="date" className="form-control" id="date" defaultValue={date} placeholder="date" ref={node => {
+          <input type="date" className="form-control" id="date" defaultValue={date} placeholder="时间" ref={node => {
           dateInput = node;
         }}/>
       </div>
@@ -40,7 +43,7 @@ const TodoForm = ({addTodo,date}) => {
         <span className="input-group-addon">
           <span className="glyphicon glyphicon-piggy-bank"></span>
           </span>
-        <input type="text" className="form-control" id="detail" placeholder="Detail" ref={node => {
+        <input type="text" className="form-control" id="detail" placeholder="花销项目..." ref={node => {
         itemInput = node;
       }}/>
        </div>
@@ -52,14 +55,14 @@ const TodoForm = ({addTodo,date}) => {
          <span className="input-group-addon">
           <span className="glyphicon glyphicon-euro"></span>
           </span>
-          <input type="number" className="form-control" id="amount" step="0.01" placeholder="amount" ref={node => {
+          <input type="number" className="form-control" id="amount" step="0.01" placeholder="金额" ref={node => {
           amountInput = node;
         }}/>
        </div>
       </div>
       <div className="form-group form-group-lg">
         <label htmlFor="description">描述信息</label>
-        <textarea className="form-control" id="description" placeholder="Detail"  rows="3" ref={node => {
+        <textarea className="form-control" id="description" placeholder="详细信息..."  rows="3" ref={node => {
         descriptionInput = node;
       }}/>
       </div>

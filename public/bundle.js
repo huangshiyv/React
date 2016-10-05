@@ -23549,6 +23549,9 @@
 	    };
 	    addTodo(inputValue);
 	    itemInput.value = '';
+	    amountInput.value = '';
+	    descriptionInput.value = '';
+	    dateInput.value = date;
 	  };
 	
 	  return _react2.default.createElement(
@@ -23570,7 +23573,7 @@
 	          { className: 'input-group-addon' },
 	          _react2.default.createElement('span', { className: 'glyphicon glyphicon-time' })
 	        ),
-	        _react2.default.createElement('input', { type: 'date', className: 'form-control', id: 'date', defaultValue: date, placeholder: 'date', ref: function ref(node) {
+	        _react2.default.createElement('input', { type: 'date', className: 'form-control', id: 'date', defaultValue: date, placeholder: '\u65F6\u95F4', ref: function ref(node) {
 	            dateInput = node;
 	          } })
 	      )
@@ -23591,7 +23594,7 @@
 	          { className: 'input-group-addon' },
 	          _react2.default.createElement('span', { className: 'glyphicon glyphicon-piggy-bank' })
 	        ),
-	        _react2.default.createElement('input', { type: 'text', className: 'form-control', id: 'detail', placeholder: 'Detail', ref: function ref(node) {
+	        _react2.default.createElement('input', { type: 'text', className: 'form-control', id: 'detail', placeholder: '\u82B1\u9500\u9879\u76EE...', ref: function ref(node) {
 	            itemInput = node;
 	          } })
 	      )
@@ -23612,7 +23615,7 @@
 	          { className: 'input-group-addon' },
 	          _react2.default.createElement('span', { className: 'glyphicon glyphicon-euro' })
 	        ),
-	        _react2.default.createElement('input', { type: 'number', className: 'form-control', id: 'amount', step: '0.01', placeholder: 'amount', ref: function ref(node) {
+	        _react2.default.createElement('input', { type: 'number', className: 'form-control', id: 'amount', step: '0.01', placeholder: '\u91D1\u989D', ref: function ref(node) {
 	            amountInput = node;
 	          } })
 	      )
@@ -23625,7 +23628,7 @@
 	        { htmlFor: 'description' },
 	        '\u63CF\u8FF0\u4FE1\u606F'
 	      ),
-	      _react2.default.createElement('textarea', { className: 'form-control', id: 'description', placeholder: 'Detail', rows: '3', ref: function ref(node) {
+	      _react2.default.createElement('textarea', { className: 'form-control', id: 'description', placeholder: '\u8BE6\u7EC6\u4FE1\u606F...', rows: '3', ref: function ref(node) {
 	          descriptionInput = node;
 	        } })
 	    ),
@@ -24936,9 +24939,9 @@
 
 /***/ },
 /* 199 */
-/*!****************************************!*\
-  !*** ./~/firebase/firebase-browser.js ***!
-  \****************************************/
+/*!**************************************************!*\
+  !*** ./~/re-base/~/firebase/firebase-browser.js ***!
+  \**************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24957,9 +24960,9 @@
 
 /***/ },
 /* 200 */
-/*!***************************!*\
-  !*** ./~/firebase/app.js ***!
-  \***************************/
+/*!*************************************!*\
+  !*** ./~/re-base/~/firebase/app.js ***!
+  \*************************************/
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/*! @license Firebase v3.4.1
@@ -24997,9 +25000,9 @@
 
 /***/ },
 /* 201 */
-/*!****************************!*\
-  !*** ./~/firebase/auth.js ***!
-  \****************************/
+/*!**************************************!*\
+  !*** ./~/re-base/~/firebase/auth.js ***!
+  \**************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
@@ -25228,9 +25231,9 @@
 
 /***/ },
 /* 202 */
-/*!********************************!*\
-  !*** ./~/firebase/database.js ***!
-  \********************************/
+/*!******************************************!*\
+  !*** ./~/re-base/~/firebase/database.js ***!
+  \******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
@@ -25483,9 +25486,9 @@
 
 /***/ },
 /* 203 */
-/*!*******************************!*\
-  !*** ./~/firebase/storage.js ***!
-  \*******************************/
+/*!*****************************************!*\
+  !*** ./~/re-base/~/firebase/storage.js ***!
+  \*****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
