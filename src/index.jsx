@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-dom';
 import axios from 'axios';
 import Title from './Title';
-import TodoForm from './TodoForm';
 import TodoList from './TodoList';
 import Rebase from 're-base';
 
@@ -65,8 +64,7 @@ class TodoApp extends React.Component{
     return (
       <div>
       <div className="col-md-4 col-md-offset-4">
-        <Title todoCount={this.state.data.length}/>
-        <TodoForm addTodo={this.addTodo.bind(this)} date={new Date().toDateInputValue()} />
+        <Title todoCount={this.state.data.length} addTodo={this.addTodo.bind(this)} date={new Date().toDateInputValue()} />
       </div> 
         <TodoList
           todos={this.state.data}

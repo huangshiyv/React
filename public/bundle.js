@@ -65,10 +65,6 @@
 	
 	var _Title2 = _interopRequireDefault(_Title);
 	
-	var _TodoForm = __webpack_require__(/*! ./TodoForm */ 195);
-	
-	var _TodoForm2 = _interopRequireDefault(_TodoForm);
-	
 	var _TodoList = __webpack_require__(/*! ./TodoList */ 196);
 	
 	var _TodoList2 = _interopRequireDefault(_TodoList);
@@ -163,8 +159,7 @@
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'col-md-4 col-md-offset-4' },
-	          _react2.default.createElement(_Title2.default, { todoCount: this.state.data.length }),
-	          _react2.default.createElement(_TodoForm2.default, { addTodo: this.addTodo.bind(this), date: new Date().toDateInputValue() })
+	          _react2.default.createElement(_Title2.default, { todoCount: this.state.data.length, addTodo: this.addTodo.bind(this), date: new Date().toDateInputValue() })
 	        ),
 	        _react2.default.createElement(_TodoList2.default, {
 	          todos: this.state.data,
@@ -23479,33 +23474,40 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	   value: true
 	});
 	
 	var _react = __webpack_require__(/*! react */ 1);
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _TodoForm = __webpack_require__(/*! ./TodoForm */ 195);
+	
+	var _TodoForm2 = _interopRequireDefault(_TodoForm);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var Title = function Title(_ref) {
-	  var todoCount = _ref.todoCount;
+	   var todoCount = _ref.todoCount;
+	   var addTodo = _ref.addTodo;
+	   var data = _ref.data;
 	
-	  return _react2.default.createElement(
-	    'div',
-	    null,
-	    _react2.default.createElement(
+	   return _react2.default.createElement(
 	      'div',
 	      null,
 	      _react2.default.createElement(
-	        'h1',
-	        null,
-	        'to-do (',
-	        todoCount,
-	        ')'
+	         'div',
+	         null,
+	         _react2.default.createElement(
+	            'h1',
+	            null,
+	            'to-do (',
+	            todoCount,
+	            ')'
+	         ),
+	         _react2.default.createElement(_TodoForm2.default, { addTodo: addTodo, date: data })
 	      )
-	    )
-	  );
+	   );
 	};
 	
 	exports.default = Title;
