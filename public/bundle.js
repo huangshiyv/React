@@ -23490,7 +23490,7 @@
 	var Title = function Title(_ref) {
 	   var todoCount = _ref.todoCount;
 	   var addTodo = _ref.addTodo;
-	   var data = _ref.data;
+	   var date = _ref.date;
 	
 	   return _react2.default.createElement(
 	      'div',
@@ -23505,7 +23505,7 @@
 	            todoCount,
 	            ')'
 	         ),
-	         _react2.default.createElement(_TodoForm2.default, { addTodo: addTodo, date: data })
+	         _react2.default.createElement(_TodoForm2.default, { addTodo: addTodo, date: date })
 	      )
 	   );
 	};
@@ -24941,9 +24941,9 @@
 
 /***/ },
 /* 199 */
-/*!**************************************************!*\
-  !*** ./~/re-base/~/firebase/firebase-browser.js ***!
-  \**************************************************/
+/*!****************************************!*\
+  !*** ./~/firebase/firebase-browser.js ***!
+  \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24962,9 +24962,9 @@
 
 /***/ },
 /* 200 */
-/*!*************************************!*\
-  !*** ./~/re-base/~/firebase/app.js ***!
-  \*************************************/
+/*!***************************!*\
+  !*** ./~/firebase/app.js ***!
+  \***************************/
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/*! @license Firebase v3.4.1
@@ -25002,9 +25002,9 @@
 
 /***/ },
 /* 201 */
-/*!**************************************!*\
-  !*** ./~/re-base/~/firebase/auth.js ***!
-  \**************************************/
+/*!****************************!*\
+  !*** ./~/firebase/auth.js ***!
+  \****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
@@ -25233,9 +25233,9 @@
 
 /***/ },
 /* 202 */
-/*!******************************************!*\
-  !*** ./~/re-base/~/firebase/database.js ***!
-  \******************************************/
+/*!********************************!*\
+  !*** ./~/firebase/database.js ***!
+  \********************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
@@ -25488,9 +25488,9 @@
 
 /***/ },
 /* 203 */
-/*!*****************************************!*\
-  !*** ./~/re-base/~/firebase/storage.js ***!
-  \*****************************************/
+/*!*******************************!*\
+  !*** ./~/firebase/storage.js ***!
+  \*******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var firebase = __webpack_require__(/*! ./app */ 200);
