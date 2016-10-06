@@ -16,13 +16,21 @@ const TodoForm = ({addTodo,date}) => {
       amount:amountInput.value,
       description:descriptionInput.value
     };
-    addTodo(inputValue);
-    itemInput.value = '';
-    amountInput.value = '';
-    descriptionInput.value ='';
-    dateInput.value = date;
+    if(itemInput.value && amountInput.value)
+    {
+      addTodo(inputValue);
+      itemInput.value = '';
+      amountInput.value = '';
+      descriptionInput.value ='';
+      dateInput.value = date;
+    }    
   };
-
+  const style ={
+    submitButton:{
+      textAlign: 'right'
+    }
+  } ;
+  
   return (
    <form onSubmit={onSubmit}>
       <div className="form-group form-group-lg">
@@ -66,7 +74,9 @@ const TodoForm = ({addTodo,date}) => {
         descriptionInput = node;
       }}/>
       </div>
+      <div style={style.submitButton}>
       <button type="submit" className="btn btn-primary">提交</button>
+      </div>
     </form>
   );
 };

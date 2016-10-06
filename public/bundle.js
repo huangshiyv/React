@@ -23474,7 +23474,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	   value: true
+	  value: true
 	});
 	
 	var _react = __webpack_require__(/*! react */ 1);
@@ -23485,29 +23485,53 @@
 	
 	var _TodoForm2 = _interopRequireDefault(_TodoForm);
 	
+	var _Modal = __webpack_require__(/*! ./Modal */ 204);
+	
+	var _Modal2 = _interopRequireDefault(_Modal);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	var Title = function Title(_ref) {
-	   var todoCount = _ref.todoCount;
-	   var addTodo = _ref.addTodo;
-	   var date = _ref.date;
+	  var todoCount = _ref.todoCount;
+	  var addTodo = _ref.addTodo;
+	  var date = _ref.date;
 	
-	   return _react2.default.createElement(
+	  var showForm = function showForm(_ref2) {
+	    var addTodo = _ref2.addTodo;
+	    var date = _ref2.date;
+	
+	    return _react2.default.createElement(_TodoForm2.default, { addTodo: addTodo, date: date });
+	  };
+	
+	  var test = function test() {
+	    return _react2.default.createElement(
+	      'h1',
+	      null,
+	      'huang'
+	    );
+	  };
+	
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    _react2.default.createElement(
 	      'div',
 	      null,
 	      _react2.default.createElement(
-	         'div',
-	         null,
-	         _react2.default.createElement(
-	            'h1',
-	            null,
-	            'to-do (',
-	            todoCount,
-	            ')'
-	         ),
-	         _react2.default.createElement(_TodoForm2.default, { addTodo: addTodo, date: date })
-	      )
-	   );
+	        'h1',
+	        null,
+	        'to-do (',
+	        todoCount,
+	        ')'
+	      ),
+	      _react2.default.createElement(
+	        'button',
+	        { type: 'button', className: 'btn btn-default', 'data-toggle': 'modal', 'data-target': '#myModal' },
+	        _react2.default.createElement('span', { className: 'glyphicon glyphicon glyphicon-plus' })
+	      ),
+	      _react2.default.createElement(_Modal2.default, { content: showForm({ addTodo: addTodo, date: date }) })
+	    )
+	  );
 	};
 	
 	exports.default = Title;
@@ -23549,11 +23573,18 @@
 	      amount: amountInput.value,
 	      description: descriptionInput.value
 	    };
-	    addTodo(inputValue);
-	    itemInput.value = '';
-	    amountInput.value = '';
-	    descriptionInput.value = '';
-	    dateInput.value = date;
+	    if (itemInput.value && amountInput.value) {
+	      addTodo(inputValue);
+	      itemInput.value = '';
+	      amountInput.value = '';
+	      descriptionInput.value = '';
+	      dateInput.value = date;
+	    }
+	  };
+	  var style = {
+	    submitButton: {
+	      textAlign: 'right'
+	    }
 	  };
 	
 	  return _react2.default.createElement(
@@ -23635,9 +23666,13 @@
 	        } })
 	    ),
 	    _react2.default.createElement(
-	      'button',
-	      { type: 'submit', className: 'btn btn-primary' },
-	      '\u63D0\u4EA4'
+	      'div',
+	      { style: style.submitButton },
+	      _react2.default.createElement(
+	        'button',
+	        { type: 'submit', className: 'btn btn-primary' },
+	        '\u63D0\u4EA4'
+	      )
 	    )
 	  );
 	};
@@ -25600,6 +25635,75 @@
 	(function(){function a(a){return new Y(a)}var b={TaskState:va,TaskEvent:ua,StringFormat:Ua,Storage:Y,Reference:X};if("undefined"!==typeof firebase)firebase.INTERNAL.registerService("storage",a,b);else throw Error("Cannot install Firebase Storage - be sure to load firebase-app.js first.");})();})();
 	module.exports = firebase.storage;
 
+
+/***/ },
+/* 204 */
+/*!***********************!*\
+  !*** ./src/Modal.jsx ***!
+  \***********************/
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+			value: true
+	});
+	
+	var _react = __webpack_require__(/*! react */ 1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var Modal = function Modal(_ref) {
+			var content = _ref.content;
+	
+			return _react2.default.createElement(
+					"div",
+					{ className: "modal fade", id: "myModal", tabIndex: "-1", role: "dialog", "aria-labelledby": "myModalLabel" },
+					_react2.default.createElement(
+							"div",
+							{ className: "modal-dialog", role: "document" },
+							_react2.default.createElement(
+									"div",
+									{ className: "modal-content" },
+									_react2.default.createElement(
+											"div",
+											{ className: "modal-header" },
+											_react2.default.createElement(
+													"button",
+													{ type: "button", className: "close", "data-dismiss": "modal", "aria-label": "Close" },
+													_react2.default.createElement(
+															"span",
+															{ "aria-hidden": "true" },
+															"\xD7"
+													)
+											),
+											_react2.default.createElement(
+													"h4",
+													{ className: "modal-title", id: "myModalLabel" },
+													"\u521B\u5EFA\u82B1\u9500\u9879\u76EE"
+											)
+									),
+									_react2.default.createElement(
+											"div",
+											{ className: "modal-body" },
+											content
+									),
+									_react2.default.createElement(
+											"div",
+											{ className: "modal-footer" },
+											_react2.default.createElement(
+													"button",
+													{ type: "button", className: "btn btn-default", "data-dismiss": "modal" },
+													"\u5173\u95ED"
+											)
+									)
+							)
+					)
+			);
+	};
+	exports.default = Modal;
 
 /***/ }
 /******/ ]);
